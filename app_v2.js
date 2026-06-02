@@ -6,9 +6,9 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 // ── 1. Init Supabase ──────────────────────────────────────────────────────────
 // Guard: Supabase CDN must be loaded before this script runs.
 // Both <script> tags are at bottom of <body>, so this is safe.
-let supabaseClient;
+let supabase;
 if (window.supabase) {
-    supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     console.log("Supabase client created OK");
 } else {
     console.error("Supabase CDN not loaded! Check the CDN <script> tag above app_v2.js.");
@@ -16,9 +16,9 @@ if (window.supabase) {
 
 // ── 2. Auth check ─────────────────────────────────────────────────────────────
 async function checkAuth() {
-    if (!supabaseClient) return;
+    if (!supabase) return;
     try {
-        const { data: { session } } = await supabaseClient.auth.getSession();
+        const { data: { session } } = await supabase.auth.getSession();
         const currentPage = window.location.pathname.split('/').pop() || 'index.html';
         console.log("Auth check | page:", currentPage, "| session:", !!session);
 
@@ -61,7 +61,7 @@ document.addEventListener('DOMContentLoaded', function () {
             errorDiv.textContent = '';
 
             try {
-                const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
+                const { error } = await supabase.auth.signInWithPassword({ email, password });
                 if (error) {
                     errorDiv.textContent = error.message;
                 } else {
@@ -80,7 +80,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const logoutBtn = document.getElementById('logoutBtn');
     if (logoutBtn) {
         logoutBtn.addEventListener('click', async () => {
-            await supabaseClient.auth.signOut();
+            await supabase.auth.signOut();
             window.location.href = 'index.html';
         });
     }
@@ -152,16 +152,17 @@ document.addEventListener('DOMContentLoaded', function () {
             if (fileInput.files.length > 0) {
                 const file     = fileInput.files[0];
                 const fileExt  = file.name.split('.').pop();
-                const filePath = `notices/${Date.now()}_${Math.random().toString(36).slice(2)}.${fileExt}`;
+                const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+                const filePath = `notices/${Date.now()}_${safeName}`;
 
                 console.log("Uploading file:", filePath);
-                const { error: uploadError } = await supabaseClient.storage
+                const { error: uploadError } = await supabase.storage
                     .from('documents')
                     .upload(filePath, file);
 
                 if (uploadError) throw new Error('File upload failed: ' + uploadError.message);
 
-                const { data: { publicUrl } } = supabaseClient.storage
+                const { data: { publicUrl } } = supabase.storage
                     .from('documents')
                     .getPublicUrl(filePath);
 
@@ -185,7 +186,7 @@ document.addEventListener('DOMContentLoaded', function () {
             };
 
             console.log("Inserting into cctv_requests:", formData);
-            const { error: insertError } = await supabaseClient
+            const { error: insertError } = await supabase
                 .from('cctv_requests')
                 .insert([formData]);
 
