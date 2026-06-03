@@ -4,8 +4,7 @@ const SUPABASE_URL = 'https://tuypdjmvmhccofqjbkss.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR1eXBkam12bWhjY29mcWpia3NzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA0MTE0MzgsImV4cCI6MjA5NTk4NzQzOH0.BnbQHqoBX0TRRTHeIT55rprmSmijwWKcqLV4AHHmnZU';
 
 // ── Init Supabase ─────────────────────────────────────────────────────────────
-// IMPORTANT: We use "supabaseClient" (not "supabase") to avoid conflicting
-// with the global window.supabase object injected by the Supabase CDN.
+// Using "supabaseClient" to avoid conflict with window.supabase from CDN
 let supabaseClient = null;
 try {
     supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -38,7 +37,6 @@ async function checkAuth() {
 // ── Wire up everything after DOM is ready ─────────────────────────────────────
 document.addEventListener('DOMContentLoaded', function () {
     console.log("DOM ready");
-
     checkAuth();
 
     // ── Login form ────────────────────────────────────────────────────────────
@@ -69,7 +67,7 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // ── Logout button ─────────────────────────────────────────────────────────
+    // ── Logout ────────────────────────────────────────────────────────────────
     const logoutBtn = document.getElementById('logoutBtn');
     if (logoutBtn) {
         logoutBtn.addEventListener('click', async () => {
@@ -78,88 +76,12 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // ── Camera footage multi-select dropdown ──────────────────────────────────
-    const cameraSelectedText = document.getElementById('cameraSelectedText');
-    const cameraOptionsList  = document.getElementById('ContentPlaceHolder1_lstCameraFootageForatm');
-
-    if (cameraSelectedText && cameraOptionsList) {
-        console.log("Camera dropdown found, wiring up...");
-
-        cameraSelectedText.addEventListener('click', function (e) {
-            e.stopPropagation();
-            cameraOptionsList.classList.toggle('select-hide');
-        });
-
-        const checkboxes = cameraOptionsList.querySelectorAll('input[type="checkbox"]');
-        console.log("Camera checkboxes found:", checkboxes.length);
-
-        checkboxes.forEach(cb => {
-            cb.addEventListener('change', () => {
-                const checked = Array.from(checkboxes).filter(c => c.checked).map(c => c.value);
-                cameraSelectedText.textContent = checked.length ? checked.join(', ') : 'Select options...';
-            });
-        });
-
-        document.addEventListener('click', () => cameraOptionsList.classList.add('select-hide'));
-        cameraOptionsList.addEventListener('click', e => e.stopPropagation());
-    } else {
-        console.warn("Camera dropdown elements not found:", {
-            cameraSelectedText: !!cameraSelectedText,
-            cameraOptionsList: !!cameraOptionsList
-        });
-    }
-
-    // ── Date auto-mask (MM/DD/YYYY) ───────────────────────────────────────────
-    function maskDate(e) {
-        if (e.inputType === 'deleteContentBackward') return;
-        let v = e.target.value.replace(/\D/g, '');
-        if (v.length > 8) v = v.substring(0, 8);
-        if (v.length >= 5)      e.target.value = `${v.slice(0,2)}/${v.slice(2,4)}/${v.slice(4,8)}`;
-        else if (v.length >= 3) e.target.value = `${v.slice(0,2)}/${v.slice(2,4)}`;
-        else                    e.target.value = v;
-    }
-
-    ['txtActualDateTime', 'txt_todate'].forEach(id => {
-        const el = document.getElementById(id);
-        if (el) {
-            el.addEventListener('input', maskDate);
-            console.log("Date mask attached to:", id);
-        } else {
-            console.warn("Date field not found:", id);
-        }
-    });
-
-    // ── Time auto-mask (HH:MM AM/PM) ─────────────────────────────────────────
-    function maskTime(e) {
-        if (e.inputType === 'deleteContentBackward') return;
-        const raw    = e.target.value.toUpperCase();
-        const digits = raw.replace(/\D/g, '').substring(0, 4);
-        const hasAM  = raw.includes('A');
-        const hasPM  = raw.includes('P');
-        let out = digits.length >= 3 ? `${digits.slice(0,2)}:${digits.slice(2,4)}` : digits;
-        if (digits.length === 4) {
-            if (hasAM)      out += ' AM';
-            else if (hasPM) out += ' PM';
-        }
-        e.target.value = out;
-    }
-
-    ['fromtime', 'txt_totime'].forEach(id => {
-        const el = document.getElementById(id);
-        if (el) {
-            el.addEventListener('input', maskTime);
-            console.log("Time mask attached to:", id);
-        } else {
-            console.warn("Time field not found:", id);
-        }
-    });
-
     // ── Submit button ─────────────────────────────────────────────────────────
-    const submitBtn  = document.getElementById('ContentPlaceHolder1_btnsubmit');
+    const submitBtn  = document.getElementById('submitBtn');
     const messageDiv = document.getElementById('formMessage');
 
     if (!submitBtn) {
-        console.log("No submitBtn on this page (expected on index.html)");
+        console.log("No submitBtn on this page (login page).");
         return;
     }
     console.log("submitBtn found, attaching listener.");
@@ -171,7 +93,7 @@ document.addEventListener('DOMContentLoaded', function () {
         messageDiv.textContent = '';
         messageDiv.className   = 'message';
 
-        // Validate required fields
+        // ── Validate required text/select/file fields ─────────────────────────
         const requiredIds = [
             'ContentPlaceHolder1_ddlBank',
             'ContentPlaceHolder1_txtATMID',
@@ -196,19 +118,29 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         }
 
-        // Validate camera footage checkboxes
-        const checkedBoxes = document.querySelectorAll('input[name="camera_footage"]:checked');
-        if (checkedBoxes.length === 0) {
+        // ── Validate acknowledgement number is 14 digits ──────────────────────
+        const ackEl = document.getElementById('txt_ack_fir_no');
+        if (ackEl.value.trim().length !== 14) {
+            messageDiv.textContent = "Acknowledgement number must be exactly 14 digits.";
+            messageDiv.className   = 'message error';
+            return;
+        }
+
+        // ── Validate camera footage multi-select ──────────────────────────────
+        const cameraSelect = document.getElementById('ContentPlaceHolder1_lstCameraFootageForatm');
+        const selectedCameras = Array.from(cameraSelect.selectedOptions).map(o => o.value);
+        if (selectedCameras.length === 0) {
             messageDiv.textContent = "Please select at least one Camera Footage option.";
             messageDiv.className   = 'message error';
             return;
         }
 
-        submitBtn.value = 'Submitting...';
+        // ── All valid — submit ────────────────────────────────────────────────
+        submitBtn.textContent = 'Submitting...';
         submitBtn.disabled    = true;
 
         try {
-            // Upload file
+            // Upload file to Supabase Storage
             let fileUrl = null;
             const fileInput = document.getElementById('ContentPlaceHolder1_uploadnotice');
             if (fileInput.files.length > 0) {
@@ -229,7 +161,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 console.log("File uploaded:", fileUrl);
             }
 
-            // Build and insert record
+            // Build record
             const formData = {
                 bank_name:          document.getElementById('ContentPlaceHolder1_ddlBank').value,
                 atm_id:             document.getElementById('ContentPlaceHolder1_txtATMID').value,
@@ -238,8 +170,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 time_from:          document.getElementById('fromtime').value,
                 date_to:            document.getElementById('txt_todate').value,
                 time_to:            document.getElementById('txt_totime').value,
-                ack_no:             document.getElementById('txt_ack_fir_no').value,
-                camera_footage_for: Array.from(checkedBoxes).map(cb => cb.value).join(', '),
+                ack_no:             ackEl.value.trim(),
+                camera_footage_for: selectedCameras.join(', '),
                 remarks:            document.getElementById('ContentPlaceHolder1_txt_remark').value,
                 notice_file_url:    fileUrl
             };
@@ -250,6 +182,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 .insert([formData]);
             if (insertError) throw insertError;
 
+            // Success
             messageDiv.textContent = 'Request submitted successfully!';
             messageDiv.className   = 'message success';
             console.log("Submission successful!");
@@ -259,14 +192,15 @@ document.addEventListener('DOMContentLoaded', function () {
                 if (el.type === 'checkbox' || el.type === 'radio') el.checked = false;
                 else el.value = '';
             });
-            cameraSelectedText && (cameraSelectedText.textContent = 'Select options...');
+            // Deselect multi-select
+            Array.from(cameraSelect.options).forEach(o => o.selected = false);
 
         } catch (err) {
             console.error("Submission error:", err);
             messageDiv.textContent = err.message;
             messageDiv.className   = 'message error';
         } finally {
-            submitBtn.value = 'Submit';
+            submitBtn.textContent = 'Submit Request';
             submitBtn.disabled    = false;
         }
     });

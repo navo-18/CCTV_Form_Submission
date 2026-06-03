@@ -6,6 +6,27 @@
     <title>Request Form - CCTV Footage</title>
     <link rel="stylesheet" href="style_v2.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        select[multiple] {
+            background-color: var(--input-bg, #1e2a3a);
+            color: var(--text-main, #e2e8f0);
+            border: 1px solid var(--border, #2d3f55);
+            border-radius: 8px;
+            padding: 6px;
+            width: 100%;
+            font-size: 14px;
+            outline: none;
+        }
+        select[multiple]:focus {
+            border-color: var(--accent, #6366f1);
+            box-shadow: 0 0 0 3px rgba(99,102,241,0.2);
+        }
+        select[multiple] option:checked {
+            background-color: var(--accent, #6366f1);
+            color: #fff;
+        }
+        input[type="date"], input[type="time"] { color-scheme: dark; }
+    </style>
 </head>
 <body>
     <div class="container form-container">
@@ -1301,43 +1322,40 @@
 
                 <div class="form-grid">
                     <div class="input-group">
-                        <label for="txtActualDateTime">Date from</label>
-                        <input type="text" id="txtActualDateTime" required placeholder="MM/DD/YYYY" pattern="(0[1-9]|1[0-2])/(0[1-9]|[12]\d|3[01])/\d{4}" maxlength="10">
+                        <label for="txtActualDateTime">Date from <span style="color:red">*</span></label>
+                        <input type="date" id="txtActualDateTime" required>
                     </div>
                     
                     <div class="input-group">
-                        <label for="fromtime">Time from</label>
-                        <input type="text" id="fromtime" required placeholder="HH:MM AM/PM" pattern="(0[1-9]|1[0-2]):[0-5]\d (AM|PM)" maxlength="8">
+                        <label for="fromtime">Time from <span style="color:red">*</span></label>
+                        <input type="time" id="fromtime" required>
                     </div>
                 </div>
 
                 <div class="form-grid">
                     <div class="input-group">
-                        <label for="txt_todate">Date to</label>
-                        <input type="text" id="txt_todate" required placeholder="MM/DD/YYYY" pattern="(0[1-9]|1[0-2])/(0[1-9]|[12]\d|3[01])/\d{4}" maxlength="10">
+                        <label for="txt_todate">Date to <span style="color:red">*</span></label>
+                        <input type="date" id="txt_todate" required>
                     </div>
                     
                     <div class="input-group">
-                        <label for="txt_totime">Time to</label>
-                        <input type="text" id="txt_totime" required placeholder="HH:MM AM/PM" pattern="(0[1-9]|1[0-2]):[0-5]\d (AM|PM)" maxlength="8">
+                        <label for="txt_totime">Time to <span style="color:red">*</span></label>
+                        <input type="time" id="txt_totime" required>
                     </div>
                 </div>
 
                 <div class="form-grid">
                     <div class="input-group">
-                        <label for="txt_ack_fir_no">Acknowledgement number</label>
-                        <input type="text" id="txt_ack_fir_no" required placeholder="Enter Acknowledgement Number">
+                        <label for="txt_ack_fir_no">Acknowledgement number <span style="color:red">*</span> <small style="color:#aaa">(14 digits)</small></label>
+                        <input type="text" id="txt_ack_fir_no" required placeholder="Enter 14 digit Acknowledgement No." maxlength="14" onkeypress="return event.charCode >= 48 && event.charCode <= 57">
                     </div>
                     
                     <div class="input-group">
-                        <label for="ContentPlaceHolder1_lstCameraFootageForatm">Camera Footage for</label>
-                        <div class="custom-select" id="cameraDropdown">
-                            <div class="select-selected" id="cameraSelectedText">Select options...</div>
-                            <div class="select-items select-hide" id="ContentPlaceHolder1_lstCameraFootageForatm">
-                                <label style="font-weight:normal; color:var(--text-main)"><input type="checkbox" name="camera_footage" value="Pinhole Camera"> Pinhole Camera</label>
-                                <label style="font-weight:normal; color:var(--text-main)"><input type="checkbox" name="camera_footage" value="ATM Room Camera"> ATM Room Camera</label>
-                            </div>
-                        </div>
+                        <label for="ContentPlaceHolder1_lstCameraFootageForatm">Camera Footage for <span style="color:red">*</span> <small style="color:#aaa">(Hold Ctrl to select multiple)</small></label>
+                        <select id="ContentPlaceHolder1_lstCameraFootageForatm" name="camera_footage" multiple required size="2" style="height:auto; padding:6px;">
+                            <option value="Pinhole Camera">Pinhole Camera</option>
+                            <option value="ATM Room Camera">ATM Room Camera</option>
+                        </select>
                     </div>
                 </div>
 
@@ -1352,7 +1370,7 @@
                 </div>
 
                 <div class="form-actions">
-                    <button type="button" id="ContentPlaceHolder1_btnsubmit" class="btn-primary">Submit Request</button>
+                    <button type="button" id="submitBtn" class="btn-primary">Submit Request</button>
                 </div>
                 <div id="formMessage" class="message"></div>
             </div>
