@@ -1311,62 +1311,64 @@
                     
                     <div class="input-group">
                         <label for="ContentPlaceHolder1_txtATMID">ATM ID</label>
-                        <input type="text" id="ContentPlaceHolder1_txtATMID" required placeholder="Enter ATM ID">
+                        <input type="text" id="ContentPlaceHolder1_txtATMID" required placeholder="Enter 5 digit ATM ID" maxlength="150" autocomplete="off">
                     </div>
                 </div>
 
                 <div class="input-group">
                     <label for="ContentPlaceHolder1_txt_atmplace">Address of ATM with pin code</label>
-                    <input type="text" id="ContentPlaceHolder1_txt_atmplace" required placeholder="Full Address with Pincode">
+                    <textarea id="ContentPlaceHolder1_txt_atmplace" rows="2" maxlength="999" required placeholder="Complete Address with PIN Code (Place of ATM)" autocomplete="off"></textarea>
                 </div>
 
                 <div class="form-grid">
                     <div class="input-group">
-                        <label for="txtActualDateTime">Date from <span style="color:red">*</span></label>
+                        <label for="txtActualDateTime">Date and Time Of Footage From <span style="color:red">*</span></label>
                         <input type="text" id="txtActualDateTime" required placeholder="MM/DD/YYYY" maxlength="10" autocomplete="off">
                     </div>
                     
                     <div class="input-group">
-                        <label for="fromtime">Time from <span style="color:red">*</span></label>
+                        <label for="fromtime">Time <span style="color:red">*</span></label>
                         <input type="text" id="fromtime" required placeholder="HH:MM AM/PM" maxlength="8" autocomplete="off">
                     </div>
                 </div>
 
                 <div class="form-grid">
                     <div class="input-group">
-                        <label for="txt_todate">Date to <span style="color:red">*</span></label>
+                        <label for="txt_todate">To Date <span style="color:red">*</span></label>
                         <input type="text" id="txt_todate" required placeholder="MM/DD/YYYY" maxlength="10" autocomplete="off">
                     </div>
                     
                     <div class="input-group">
-                        <label for="txt_totime">Time to <span style="color:red">*</span></label>
+                        <label for="txt_totime">Time <span style="color:red">*</span></label>
                         <input type="text" id="txt_totime" required placeholder="HH:MM AM/PM" maxlength="8" autocomplete="off">
                     </div>
                 </div>
 
                 <div class="form-grid">
                     <div class="input-group">
-                        <label for="txt_ack_fir_no">Acknowledgement number <span style="color:red">*</span> <small style="color:#aaa">(14 digits)</small></label>
+                        <label for="txt_ack_fir_no">Acknowledgement No <span style="color:red">*</span></label>
+                        <small style="color:#aaa;">Enter 14 digit acknowledgement number</small>
                         <input type="text" id="txt_ack_fir_no" required placeholder="Enter 14 digit Acknowledgement No." maxlength="14" onkeypress="return event.charCode >= 48 && event.charCode <= 57">
                     </div>
                     
                     <div class="input-group">
-                        <label for="ContentPlaceHolder1_lstCameraFootageForatm">Camera Footage for <span style="color:red">*</span> <small style="color:#aaa">(Hold Ctrl to select multiple)</small></label>
+                        <label for="ContentPlaceHolder1_lstCameraFootageForatm">Camera Footage for <span style="color:red">*</span></label>
                         <select id="ContentPlaceHolder1_lstCameraFootageForatm" name="camera_footage" multiple required size="2" style="height:auto; padding:6px;">
-                            <option value="Pinhole Camera">Pinhole Camera</option>
-                            <option value="ATM Room Camera">ATM Room Camera</option>
+                            <option value="4">Pinhole Camera</option>
+                            <option value="5">ATM Room Camera</option>
                         </select>
                     </div>
                 </div>
 
                 <div class="input-group">
-                    <label for="ContentPlaceHolder1_uploadnotice">Upload BNSS94 Notice (PDF/Image)</label>
-                    <input type="file" id="ContentPlaceHolder1_uploadnotice" accept=".pdf,image/*" required>
+                    <label for="ContentPlaceHolder1_uploadnotice">Upload BNSS 94 Notice <span style="color:red">*</span> <small style="color:#aaa;">(Only PDF, max 5MB)</small></label>
+                    <input type="file" id="ContentPlaceHolder1_uploadnotice" accept=".pdf" required>
                 </div>
 
                 <div class="input-group">
-                    <label for="ContentPlaceHolder1_txt_remark">Remarks</label>
-                    <textarea id="ContentPlaceHolder1_txt_remark" rows="3" placeholder="Any additional information..." required></textarea>
+                    <label for="ContentPlaceHolder1_txt_remark">Remark <span style="color:red">*</span> <small style="color:#aaa;">(Only Alphanumeric , . - ():/  are allowed)</small></label>
+                    <textarea id="ContentPlaceHolder1_txt_remark" rows="3" maxlength="249" required placeholder="(Only Alphanumeric , . - () ! are allowed. Max 250 characters)" oninput="updateRemarkCounter(this)"></textarea>
+                    <small><span id="remarkCounter" style="color:#aaa;">250</span> characters remaining</small>
                 </div>
 
                 <div class="form-actions">

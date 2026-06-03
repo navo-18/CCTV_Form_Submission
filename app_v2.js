@@ -124,8 +124,18 @@ document.addEventListener('DOMContentLoaded', function () {
         if (el) el.addEventListener('input', maskTime);
     });
 
+    // ── Remarks character counter ─────────────────────────────────────────────
+    window.updateRemarkCounter = function(el) {
+        const remaining = 249 - el.value.length;
+        const counter = document.getElementById('remarkCounter');
+        if (counter) {
+            counter.textContent = remaining;
+            counter.style.color = remaining < 20 ? 'red' : '#aaa';
+        }
+    };
+
     // ── Submit button ─────────────────────────────────────────────────────────
-    const submitBtn  = document.getElementById('ContentPlaceHolder1_btnsubmit');
+    const submitBtn  = document.getElementById('submitBtn');
     const messageDiv = document.getElementById('formMessage');
 
     if (!submitBtn) {
@@ -188,6 +198,17 @@ document.addEventListener('DOMContentLoaded', function () {
         submitBtn.disabled    = true;
 
         try {
+            // Validate file: PDF only, max 5MB
+            if (fileInput.files.length > 0) {
+                const f = fileInput.files[0];
+                if (f.type !== 'application/pdf') {
+                    throw new Error('Only PDF files are allowed.');
+                }
+                if (f.size > 5 * 1024 * 1024) {
+                    throw new Error('File size must not exceed 5MB.');
+                }
+            }
+
             // Upload file to Supabase Storage
             let fileUrl = null;
             const fileInput = document.getElementById('ContentPlaceHolder1_uploadnotice');
@@ -219,7 +240,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 date_to:            document.getElementById('txt_todate').value,
                 time_to:            document.getElementById('txt_totime').value,
                 ack_no:             ackEl.value.trim(),
-                camera_footage_for: selectedCameras.join(', '),
+                camera_footage_for: selectedCameras.map(v => v === '4' ? 'Pinhole Camera' : v === '5' ? 'ATM Room Camera' : v).join(', '),
                 remarks:            document.getElementById('ContentPlaceHolder1_txt_remark').value,
                 notice_file_url:    fileUrl
             };
