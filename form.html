@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Request Form - CCTV Footage</title>
     <link rel="stylesheet" href="style_v2.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.8.7/chosen.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
         select[multiple] {
@@ -27,93 +26,6 @@
             color: #fff;
         }
         input[type="date"], input[type="time"] { color-scheme: dark; }
-
-        /* Chosen.js dark theme overrides */
-        .chosen-container { width: 100% !important; font-size: 14px; }
-
-        /* The closed select box */
-        .chosen-container-single .chosen-single {
-            background: #1e2a3a !important;
-            background-image: none !important;
-            color: #e2e8f0 !important;
-            border: 1px solid #2d3f55 !important;
-            border-radius: 8px !important;
-            padding: 10px 14px !important;
-            height: auto !important;
-            line-height: 1.5 !important;
-            box-shadow: none !important;
-        }
-        .chosen-container-single .chosen-single span {
-            color: #e2e8f0 !important;
-            margin-right: 26px;
-        }
-        .chosen-container-single .chosen-single abbr { display: none; }
-        .chosen-container-single .chosen-single div {
-            width: 26px;
-        }
-        .chosen-container-single .chosen-single div b {
-            background: none !important;
-        }
-        .chosen-container-single .chosen-single div b:after {
-            content: "▾";
-            color: #e2e8f0;
-            font-size: 16px;
-            position: absolute;
-            right: 12px;
-            top: 50%;
-            transform: translateY(-50%);
-        }
-
-        /* The open dropdown */
-        .chosen-container-single .chosen-drop {
-            background: #1e2a3a !important;
-            border: 1px solid #2d3f55 !important;
-            border-top: none !important;
-            border-radius: 0 0 8px 8px !important;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.5) !important;
-        }
-
-        /* Search box inside dropdown */
-        .chosen-search {
-            background: #1e2a3a !important;
-            padding: 8px !important;
-        }
-        .chosen-search input[type="text"] {
-            background: #0f1923 !important;
-            color: #e2e8f0 !important;
-            border: 1px solid #2d3f55 !important;
-            border-radius: 6px !important;
-            padding: 6px 10px !important;
-            width: 100% !important;
-            box-sizing: border-box !important;
-        }
-        .chosen-search input[type="text"]:focus {
-            border-color: #6366f1 !important;
-            outline: none !important;
-        }
-
-        /* Options list */
-        .chosen-results {
-            background: #1e2a3a !important;
-            color: #e2e8f0 !important;
-            margin: 0 !important;
-            padding: 0 !important;
-            max-height: 240px !important;
-        }
-        .chosen-results li {
-            color: #e2e8f0 !important;
-            padding: 8px 12px !important;
-            line-height: 1.4 !important;
-        }
-        .chosen-results li.active-result:hover,
-        .chosen-results li.highlighted {
-            background: #6366f1 !important;
-            color: #fff !important;
-        }
-        .chosen-results li.no-results {
-            background: #1e2a3a !important;
-            color: #aaa !important;
-        }
     </style>
 </head>
 <body>
@@ -1474,11 +1386,60 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.8.7/chosen.jquery.min.js"></script>
     <script>
         $(document).ready(function() {
+            // Load Chosen CSS first
+            $('<link>').attr({rel:'stylesheet', href:'https://cdnjs.cloudflare.com/ajax/libs/chosen/1.8.7/chosen.min.css'}).appendTo('head');
+
+            // Init Chosen
             $('#ContentPlaceHolder1_ddlBank').chosen({
                 search_contains: true,
                 placeholder_text_single: '--Select BANK--',
                 no_results_text: 'No bank found:'
             });
+
+            // Inject dark overrides AFTER Chosen CSS — guarantees we win
+            $('<style>').text(`
+                .chosen-container { width: 100% !important; font-size: 14px; }
+                .chosen-container-single .chosen-single {
+                    background: #1e2a3a !important;
+                    background-image: none !important;
+                    color: #e2e8f0 !important;
+                    border: 1px solid #2d3f55 !important;
+                    border-radius: 8px !important;
+                    padding: 10px 14px !important;
+                    height: auto !important;
+                    line-height: 1.5 !important;
+                    box-shadow: none !important;
+                }
+                .chosen-container-single .chosen-single span { color: #e2e8f0 !important; margin-right: 26px; }
+                .chosen-container-single .chosen-single div b { background: none !important; }
+                .chosen-container-single .chosen-single div b:after {
+                    content: "▾"; color: #e2e8f0; font-size: 16px;
+                    position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+                }
+                .chosen-container-single .chosen-drop {
+                    background: #1e2a3a !important;
+                    border: 1px solid #2d3f55 !important;
+                    border-top: none !important;
+                    border-radius: 0 0 8px 8px !important;
+                    box-shadow: 0 8px 24px rgba(0,0,0,0.5) !important;
+                }
+                .chosen-search { background: #1e2a3a !important; padding: 8px !important; }
+                .chosen-search input[type="text"] {
+                    background: #0f1923 !important;
+                    color: #e2e8f0 !important;
+                    border: 1px solid #2d3f55 !important;
+                    border-radius: 6px !important;
+                    padding: 6px 10px !important;
+                    width: 100% !important;
+                    box-sizing: border-box !important;
+                }
+                .chosen-search input[type="text"]:focus { border-color: #6366f1 !important; outline: none !important; }
+                .chosen-results { background: #1e2a3a !important; color: #e2e8f0 !important; margin: 0 !important; padding: 0 !important; max-height: 240px !important; }
+                .chosen-results li { color: #e2e8f0 !important; padding: 8px 12px !important; line-height: 1.4 !important; }
+                .chosen-results li.active-result:hover,
+                .chosen-results li.highlighted { background: #6366f1 !important; color: #fff !important; }
+                .chosen-results li.no-results { background: #1e2a3a !important; color: #aaa !important; }
+            `).appendTo('head');
         });
     </script>
     <script src="app_v2.js"></script>
