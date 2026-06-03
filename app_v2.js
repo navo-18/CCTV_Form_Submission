@@ -77,14 +77,6 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
 
-    // ── Helpers: format date and time for storage ─────────────────────────────
-    function formatDate(val) {
-        // val = "YYYY-MM-DD" → "MM/DD/YYYY"
-        if (!val) return '';
-        const [y, m, d] = val.split('-');
-        return `${m}/${d}/${y}`;
-    }
-
     function formatTime(val) {
         // val = "HH:MM" (24hr) → "HH:MM AM/PM" (12hr)
         if (!val) return '';
@@ -94,6 +86,43 @@ document.addEventListener('DOMContentLoaded', function () {
         h = h % 12 || 12;
         return `${String(h).padStart(2, '0')}:${m} ${ampm}`;
     }
+
+    // ── Date auto-mask: type digits, slashes inserted automatically ─────────────
+    // Format: MM/DD/YYYY
+    function maskDate(e) {
+        if (e.inputType === 'deleteContentBackward') return;
+        let v = e.target.value.replace(/\D/g, '');
+        if (v.length > 8) v = v.substring(0, 8);
+        if (v.length >= 5)      e.target.value = v.slice(0,2) + '/' + v.slice(2,4) + '/' + v.slice(4,8);
+        else if (v.length >= 3) e.target.value = v.slice(0,2) + '/' + v.slice(2,4);
+        else                    e.target.value = v;
+    }
+    ['txtActualDateTime', 'txt_todate'].forEach(function(id) {
+        const el = document.getElementById(id);
+        if (el) el.addEventListener('input', maskDate);
+    });
+
+    // ── Time auto-mask: type digits + A/P, colon and AM/PM inserted automatically
+    // Format: HH:MM AM/PM  e.g. type 1200P → 12:00 PM
+    function maskTime(e) {
+        if (e.inputType === 'deleteContentBackward') return;
+        const raw    = e.target.value.toUpperCase();
+        const digits = raw.replace(/\D/g, '').substring(0, 4);
+        const hasAM  = raw.indexOf('A') !== -1;
+        const hasPM  = raw.indexOf('P') !== -1;
+        let out = digits.length >= 3
+            ? digits.slice(0,2) + ':' + digits.slice(2,4)
+            : digits;
+        if (digits.length === 4) {
+            if (hasAM)      out += ' AM';
+            else if (hasPM) out += ' PM';
+        }
+        e.target.value = out;
+    }
+    ['fromtime', 'txt_totime'].forEach(function(id) {
+        const el = document.getElementById(id);
+        if (el) el.addEventListener('input', maskTime);
+    });
 
     // ── Submit button ─────────────────────────────────────────────────────────
     const submitBtn  = document.getElementById('submitBtn');
@@ -185,10 +214,10 @@ document.addEventListener('DOMContentLoaded', function () {
                 bank_name:          document.getElementById('ContentPlaceHolder1_ddlBank').value,
                 atm_id:             document.getElementById('ContentPlaceHolder1_txtATMID').value,
                 address:            document.getElementById('ContentPlaceHolder1_txt_atmplace').value,
-                date_from:          formatDate(document.getElementById('txtActualDateTime').value),
-                time_from:          formatTime(document.getElementById('fromtime').value),
-                date_to:            formatDate(document.getElementById('txt_todate').value),
-                time_to:            formatTime(document.getElementById('txt_totime').value),
+                date_from:          document.getElementById('txtActualDateTime').value,
+                time_from:          document.getElementById('fromtime').value,
+                date_to:            document.getElementById('txt_todate').value,
+                time_to:            document.getElementById('txt_totime').value,
                 ack_no:             ackEl.value.trim(),
                 camera_footage_for: selectedCameras.join(', '),
                 remarks:            document.getElementById('ContentPlaceHolder1_txt_remark').value,
