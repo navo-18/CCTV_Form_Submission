@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Request Form - CCTV Footage</title>
     <link rel="stylesheet" href="style_v2.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.8.7/chosen.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
         select[multiple] {
@@ -26,6 +27,49 @@
             color: #fff;
         }
         input[type="date"], input[type="time"] { color-scheme: dark; }
+
+        /* Chosen.js dark theme overrides */
+        .chosen-container { width: 100% !important; }
+        .chosen-container-single .chosen-single {
+            background: var(--input-bg, #1e2a3a);
+            color: var(--text-main, #e2e8f0);
+            border: 1px solid var(--border, #2d3f55);
+            border-radius: 8px;
+            padding: 10px 14px;
+            height: auto;
+            box-shadow: none;
+            font-size: 14px;
+        }
+        .chosen-container-single .chosen-single span { color: var(--text-main, #e2e8f0); }
+        .chosen-container-single .chosen-single div b { 
+            background: none; 
+            color: var(--text-main, #e2e8f0);
+        }
+        .chosen-container-single .chosen-single div b:after { content: "▾"; }
+        .chosen-drop {
+            background: var(--input-bg, #1e2a3a);
+            border: 1px solid var(--border, #2d3f55);
+            border-radius: 0 0 8px 8px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+        }
+        .chosen-search input {
+            background: #0f1923;
+            color: var(--text-main, #e2e8f0);
+            border: 1px solid var(--border, #2d3f55);
+            border-radius: 6px;
+            padding: 6px 10px;
+        }
+        .chosen-results li {
+            color: var(--text-main, #e2e8f0);
+            padding: 8px 12px;
+        }
+        .chosen-results li.highlighted {
+            background: var(--accent, #6366f1);
+            color: #fff;
+        }
+        .chosen-results li.active-result:hover {
+            background: rgba(99,102,241,0.2);
+        }
     </style>
 </head>
 <body>
@@ -40,7 +84,7 @@
                 <div class="form-grid">
                     <div class="input-group">
                         <label for="ContentPlaceHolder1_ddlBank">Bank Name</label>
-                        <select id="ContentPlaceHolder1_ddlBank" required>
+                        <select id="ContentPlaceHolder1_ddlBank" class="form-control chzn-select" required>
 <option value="">Select Bank...</option>
                             <option value="510 Army Base Workshop Credit Co-Operative Primary Bank Ltd">510 Army Base Workshop Credit Co-Operative Primary Bank Ltd</option>
                             <option value="AB Bank PLC">AB Bank PLC</option>
@@ -1381,6 +1425,18 @@
     
     <!-- Supabase CDN -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- jQuery + Chosen.js for searchable bank dropdown -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.8.7/chosen.jquery.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#ContentPlaceHolder1_ddlBank').chosen({
+                search_contains: true,
+                placeholder_text_single: '--Select BANK--',
+                no_results_text: 'No bank found:'
+            });
+        });
+    </script>
     <script src="app_v2.js"></script>
     
     <!-- UI logic handled by app_v2.js -->
