@@ -125,7 +125,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     // ── Submit button ─────────────────────────────────────────────────────────
-    const submitBtn  = document.getElementById('submitBtn');
+    const submitBtn  = document.getElementById('ContentPlaceHolder1_btnsubmit');
     const messageDiv = document.getElementById('formMessage');
 
     if (!submitBtn) {
