@@ -198,6 +198,10 @@ document.addEventListener('DOMContentLoaded', function () {
         submitBtn.disabled    = true;
 
         try {
+            // Upload file to Supabase Storage
+            let fileUrl = null;
+            const fileInput = document.getElementById('ContentPlaceHolder1_uploadnotice');
+
             // Validate file: PDF only, max 5MB
             if (fileInput.files.length > 0) {
                 const f = fileInput.files[0];
@@ -209,9 +213,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
             }
 
-            // Upload file to Supabase Storage
-            let fileUrl = null;
-            const fileInput = document.getElementById('ContentPlaceHolder1_uploadnotice');
             if (fileInput.files.length > 0) {
                 const file     = fileInput.files[0];
                 const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
