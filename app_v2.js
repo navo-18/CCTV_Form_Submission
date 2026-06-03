@@ -3,32 +3,29 @@ console.log("app_v2.js loaded");
 const SUPABASE_URL = 'https://tuypdjmvmhccofqjbkss.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR1eXBkam12bWhjY29mcWpia3NzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA0MTE0MzgsImV4cCI6MjA5NTk4NzQzOH0.BnbQHqoBX0TRRTHeIT55rprmSmijwWKcqLV4AHHmnZU';
 
-// ── 1. Init Supabase ──────────────────────────────────────────────────────────
-// Guard: Supabase CDN must be loaded before this script runs.
-// Both <script> tags are at bottom of <body>, so this is safe.
-let supabase;
-if (window.supabase) {
-    supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+// ── Init Supabase ─────────────────────────────────────────────────────────────
+// IMPORTANT: We use "supabaseClient" (not "supabase") to avoid conflicting
+// with the global window.supabase object injected by the Supabase CDN.
+let supabaseClient = null;
+try {
+    supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     console.log("Supabase client created OK");
-} else {
-    console.error("Supabase CDN not loaded! Check the CDN <script> tag above app_v2.js.");
+} catch (e) {
+    console.error("Supabase init failed:", e.message);
 }
 
-// ── 2. Auth check ─────────────────────────────────────────────────────────────
+// ── Auth check ────────────────────────────────────────────────────────────────
 async function checkAuth() {
-    if (!supabase) return;
+    if (!supabaseClient) return;
     try {
-        const { data: { session } } = await supabase.auth.getSession();
+        const { data: { session } } = await supabaseClient.auth.getSession();
         const currentPage = window.location.pathname.split('/').pop() || 'index.html';
-        console.log("Auth check | page:", currentPage, "| session:", !!session);
-
+        console.log("Auth | page:", currentPage, "| session:", !!session);
         if (session) {
-            // Logged in but on login page → go to form
             if (currentPage === 'index.html' || currentPage === '') {
                 window.location.href = 'form.html';
             }
         } else {
-            // Not logged in but on form page → go to login
             if (currentPage === 'form.html') {
                 window.location.href = 'index.html';
             }
@@ -38,11 +35,10 @@ async function checkAuth() {
     }
 }
 
-// ── 3. Wire up UI after DOM is ready ─────────────────────────────────────────
+// ── Wire up everything after DOM is ready ─────────────────────────────────────
 document.addEventListener('DOMContentLoaded', function () {
-    console.log("DOM ready, wiring up UI...");
+    console.log("DOM ready");
 
-    // Run auth check now that DOM is ready
     checkAuth();
 
     // ── Login form ────────────────────────────────────────────────────────────
@@ -50,18 +46,15 @@ document.addEventListener('DOMContentLoaded', function () {
     if (loginForm) {
         loginForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-
             const email    = document.getElementById('email').value;
             const password = document.getElementById('password').value;
             const errorDiv = document.getElementById('loginError');
             const btn      = loginForm.querySelector('button');
-
             btn.textContent = 'Logging in...';
-            btn.disabled    = true;
+            btn.disabled = true;
             errorDiv.textContent = '';
-
             try {
-                const { error } = await supabase.auth.signInWithPassword({ email, password });
+                const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
                 if (error) {
                     errorDiv.textContent = error.message;
                 } else {
@@ -71,7 +64,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 errorDiv.textContent = "Error: " + err.message;
             } finally {
                 btn.textContent = 'Login';
-                btn.disabled    = false;
+                btn.disabled = false;
             }
         });
     }
@@ -80,30 +73,105 @@ document.addEventListener('DOMContentLoaded', function () {
     const logoutBtn = document.getElementById('logoutBtn');
     if (logoutBtn) {
         logoutBtn.addEventListener('click', async () => {
-            await supabase.auth.signOut();
+            await supabaseClient.auth.signOut();
             window.location.href = 'index.html';
         });
     }
+
+    // ── Camera footage multi-select dropdown ──────────────────────────────────
+    const cameraSelectedText = document.getElementById('cameraSelectedText');
+    const cameraOptionsList  = document.getElementById('ContentPlaceHolder1_lstCameraFootageForatm');
+
+    if (cameraSelectedText && cameraOptionsList) {
+        console.log("Camera dropdown found, wiring up...");
+
+        cameraSelectedText.addEventListener('click', function (e) {
+            e.stopPropagation();
+            cameraOptionsList.classList.toggle('select-hide');
+        });
+
+        const checkboxes = cameraOptionsList.querySelectorAll('input[type="checkbox"]');
+        console.log("Camera checkboxes found:", checkboxes.length);
+
+        checkboxes.forEach(cb => {
+            cb.addEventListener('change', () => {
+                const checked = Array.from(checkboxes).filter(c => c.checked).map(c => c.value);
+                cameraSelectedText.textContent = checked.length ? checked.join(', ') : 'Select options...';
+            });
+        });
+
+        document.addEventListener('click', () => cameraOptionsList.classList.add('select-hide'));
+        cameraOptionsList.addEventListener('click', e => e.stopPropagation());
+    } else {
+        console.warn("Camera dropdown elements not found:", {
+            cameraSelectedText: !!cameraSelectedText,
+            cameraOptionsList: !!cameraOptionsList
+        });
+    }
+
+    // ── Date auto-mask (MM/DD/YYYY) ───────────────────────────────────────────
+    function maskDate(e) {
+        if (e.inputType === 'deleteContentBackward') return;
+        let v = e.target.value.replace(/\D/g, '');
+        if (v.length > 8) v = v.substring(0, 8);
+        if (v.length >= 5)      e.target.value = `${v.slice(0,2)}/${v.slice(2,4)}/${v.slice(4,8)}`;
+        else if (v.length >= 3) e.target.value = `${v.slice(0,2)}/${v.slice(2,4)}`;
+        else                    e.target.value = v;
+    }
+
+    ['txtActualDateTime', 'txt_todate'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+            el.addEventListener('input', maskDate);
+            console.log("Date mask attached to:", id);
+        } else {
+            console.warn("Date field not found:", id);
+        }
+    });
+
+    // ── Time auto-mask (HH:MM AM/PM) ─────────────────────────────────────────
+    function maskTime(e) {
+        if (e.inputType === 'deleteContentBackward') return;
+        const raw    = e.target.value.toUpperCase();
+        const digits = raw.replace(/\D/g, '').substring(0, 4);
+        const hasAM  = raw.includes('A');
+        const hasPM  = raw.includes('P');
+        let out = digits.length >= 3 ? `${digits.slice(0,2)}:${digits.slice(2,4)}` : digits;
+        if (digits.length === 4) {
+            if (hasAM)      out += ' AM';
+            else if (hasPM) out += ' PM';
+        }
+        e.target.value = out;
+    }
+
+    ['fromtime', 'txt_totime'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+            el.addEventListener('input', maskTime);
+            console.log("Time mask attached to:", id);
+        } else {
+            console.warn("Time field not found:", id);
+        }
+    });
 
     // ── Submit button ─────────────────────────────────────────────────────────
     const submitBtn  = document.getElementById('submitBtn');
     const messageDiv = document.getElementById('formMessage');
 
     if (!submitBtn) {
-        console.error("submitBtn not found in DOM!");
+        console.log("No submitBtn on this page (expected on index.html)");
         return;
     }
-    console.log("submitBtn found, attaching click listener.");
+    console.log("submitBtn found, attaching listener.");
 
     submitBtn.addEventListener('click', async (e) => {
         e.preventDefault();
         console.log("Submit clicked");
 
-        // Clear previous message
         messageDiv.textContent = '';
         messageDiv.className   = 'message';
 
-        // ── Validate text / select / file fields ──────────────────────────────
+        // Validate required fields
         const requiredIds = [
             'ContentPlaceHolder1_ddlBank',
             'ContentPlaceHolder1_txtATMID',
@@ -119,20 +187,16 @@ document.addEventListener('DOMContentLoaded', function () {
         for (const id of requiredIds) {
             const el = document.getElementById(id);
             if (!el) { console.warn("Field not found:", id); continue; }
-
-            const isEmpty = el.files
-                ? el.files.length === 0          // file input
-                : !el.value.trim();              // text / select
-
+            const isEmpty = el.files ? el.files.length === 0 : !el.value.trim();
             if (isEmpty) {
                 messageDiv.textContent = `Please fill out all required fields. (Missing: ${id})`;
                 messageDiv.className   = 'message error';
-                console.warn("Validation failed on:", id);
+                console.warn("Validation failed:", id);
                 return;
             }
         }
 
-        // ── Validate checkboxes ───────────────────────────────────────────────
+        // Validate camera footage checkboxes
         const checkedBoxes = document.querySelectorAll('input[name="camera_footage"]:checked');
         if (checkedBoxes.length === 0) {
             messageDiv.textContent = "Please select at least one Camera Footage option.";
@@ -140,59 +204,52 @@ document.addEventListener('DOMContentLoaded', function () {
             return;
         }
 
-        // ── All good – disable button and submit ──────────────────────────────
         submitBtn.textContent = 'Submitting...';
         submitBtn.disabled    = true;
 
         try {
-            // Upload file to Supabase Storage
+            // Upload file
             let fileUrl = null;
             const fileInput = document.getElementById('ContentPlaceHolder1_uploadnotice');
-
             if (fileInput.files.length > 0) {
                 const file     = fileInput.files[0];
-                const fileExt  = file.name.split('.').pop();
                 const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
                 const filePath = `notices/${Date.now()}_${safeName}`;
+                console.log("Uploading:", filePath);
 
-                console.log("Uploading file:", filePath);
-                const { error: uploadError } = await supabase.storage
+                const { error: uploadError } = await supabaseClient.storage
                     .from('documents')
                     .upload(filePath, file);
-
                 if (uploadError) throw new Error('File upload failed: ' + uploadError.message);
 
-                const { data: { publicUrl } } = supabase.storage
+                const { data: { publicUrl } } = supabaseClient.storage
                     .from('documents')
                     .getPublicUrl(filePath);
-
                 fileUrl = publicUrl;
                 console.log("File uploaded:", fileUrl);
             }
 
-            // Build form payload
+            // Build and insert record
             const formData = {
-                bank_name:            document.getElementById('ContentPlaceHolder1_ddlBank').value,
-                atm_id:               document.getElementById('ContentPlaceHolder1_txtATMID').value,
-                address:              document.getElementById('ContentPlaceHolder1_txt_atmplace').value,
-                date_from:            document.getElementById('txtActualDateTime').value,
-                time_from:            document.getElementById('fromtime').value,
-                date_to:              document.getElementById('txt_todate').value,
-                time_to:              document.getElementById('txt_totime').value,
-                ack_no:               document.getElementById('txt_ack_fir_no').value,
-                camera_footage_for:   Array.from(checkedBoxes).map(cb => cb.value).join(', '),
-                remarks:              document.getElementById('ContentPlaceHolder1_txt_remark').value,
-                notice_file_url:      fileUrl
+                bank_name:          document.getElementById('ContentPlaceHolder1_ddlBank').value,
+                atm_id:             document.getElementById('ContentPlaceHolder1_txtATMID').value,
+                address:            document.getElementById('ContentPlaceHolder1_txt_atmplace').value,
+                date_from:          document.getElementById('txtActualDateTime').value,
+                time_from:          document.getElementById('fromtime').value,
+                date_to:            document.getElementById('txt_todate').value,
+                time_to:            document.getElementById('txt_totime').value,
+                ack_no:             document.getElementById('txt_ack_fir_no').value,
+                camera_footage_for: Array.from(checkedBoxes).map(cb => cb.value).join(', '),
+                remarks:            document.getElementById('ContentPlaceHolder1_txt_remark').value,
+                notice_file_url:    fileUrl
             };
 
-            console.log("Inserting into cctv_requests:", formData);
-            const { error: insertError } = await supabase
+            console.log("Inserting:", formData);
+            const { error: insertError } = await supabaseClient
                 .from('cctv_requests')
                 .insert([formData]);
-
             if (insertError) throw insertError;
 
-            // ── Success ───────────────────────────────────────────────────────
             messageDiv.textContent = 'Request submitted successfully!';
             messageDiv.className   = 'message success';
             console.log("Submission successful!");
@@ -202,6 +259,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 if (el.type === 'checkbox' || el.type === 'radio') el.checked = false;
                 else el.value = '';
             });
+            cameraSelectedText && (cameraSelectedText.textContent = 'Select options...');
 
         } catch (err) {
             console.error("Submission error:", err);
@@ -211,61 +269,6 @@ document.addEventListener('DOMContentLoaded', function () {
             submitBtn.textContent = 'Submit Request';
             submitBtn.disabled    = false;
         }
-    });
-
-    // ── Custom multi-select dropdown ──────────────────────────────────────────
-    const cameraDropdown = document.getElementById('cameraSelectedText');
-    const cameraItems    = document.getElementById('ContentPlaceHolder1_lstCameraFootageForatm');
-
-    if (cameraDropdown && cameraItems) {
-        cameraDropdown.addEventListener('click', function (e) {
-            e.stopPropagation();
-            cameraItems.classList.toggle('select-hide');
-        });
-
-        const checkboxes = cameraItems.querySelectorAll('input[type="checkbox"]');
-        checkboxes.forEach(cb => {
-            cb.addEventListener('change', () => {
-                const checked = Array.from(checkboxes).filter(c => c.checked).map(c => c.value);
-                cameraDropdown.textContent = checked.length ? checked.join(', ') : 'Select options...';
-            });
-        });
-
-        document.addEventListener('click', () => cameraItems.classList.add('select-hide'));
-        cameraItems.addEventListener('click', e => e.stopPropagation());
-    }
-
-    // ── Date auto-mask (DD/MM/YYYY) ───────────────────────────────────────────
-    function maskDate(e) {
-        if (e.inputType === 'deleteContentBackward') return;
-        let v = e.target.value.replace(/\D/g, '');
-        if (v.length > 8) v = v.substring(0, 8);
-        if (v.length >= 5)      e.target.value = `${v.slice(0,2)}/${v.slice(2,4)}/${v.slice(4,8)}`;
-        else if (v.length >= 3) e.target.value = `${v.slice(0,2)}/${v.slice(2,4)}`;
-        else                    e.target.value = v;
-    }
-    ['txtActualDateTime', 'txt_todate'].forEach(id => {
-        const el = document.getElementById(id);
-        if (el) el.addEventListener('input', maskDate);
-    });
-
-    // ── Time auto-mask (HH:MM AM/PM) ─────────────────────────────────────────
-    function maskTime(e) {
-        if (e.inputType === 'deleteContentBackward') return;
-        let v       = e.target.value.toUpperCase();
-        let chars   = v.replace(/[^0-9APM]/g, '');
-        let digits  = chars.replace(/\D/g, '').substring(0, 4);
-        let letters = chars.replace(/[^APM]/g, '').substring(0, 2);
-        let out     = digits.length >= 3 ? `${digits.slice(0,2)}:${digits.slice(2,4)}` : digits;
-        if (digits.length === 4) {
-            if (letters.startsWith('A')) out += ' AM';
-            else if (letters.startsWith('P')) out += ' PM';
-        }
-        e.target.value = out;
-    }
-    ['fromtime', 'txt_totime'].forEach(id => {
-        const el = document.getElementById(id);
-        if (el) el.addEventListener('input', maskTime);
     });
 
 }); // end DOMContentLoaded
