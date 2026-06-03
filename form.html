@@ -29,46 +29,90 @@
         input[type="date"], input[type="time"] { color-scheme: dark; }
 
         /* Chosen.js dark theme overrides */
-        .chosen-container { width: 100% !important; }
+        .chosen-container { width: 100% !important; font-size: 14px; }
+
+        /* The closed select box */
         .chosen-container-single .chosen-single {
-            background: var(--input-bg, #1e2a3a);
-            color: var(--text-main, #e2e8f0);
-            border: 1px solid var(--border, #2d3f55);
-            border-radius: 8px;
-            padding: 10px 14px;
-            height: auto;
-            box-shadow: none;
-            font-size: 14px;
+            background: #1e2a3a !important;
+            background-image: none !important;
+            color: #e2e8f0 !important;
+            border: 1px solid #2d3f55 !important;
+            border-radius: 8px !important;
+            padding: 10px 14px !important;
+            height: auto !important;
+            line-height: 1.5 !important;
+            box-shadow: none !important;
         }
-        .chosen-container-single .chosen-single span { color: var(--text-main, #e2e8f0); }
-        .chosen-container-single .chosen-single div b { 
-            background: none; 
-            color: var(--text-main, #e2e8f0);
+        .chosen-container-single .chosen-single span {
+            color: #e2e8f0 !important;
+            margin-right: 26px;
         }
-        .chosen-container-single .chosen-single div b:after { content: "▾"; }
-        .chosen-drop {
-            background: var(--input-bg, #1e2a3a);
-            border: 1px solid var(--border, #2d3f55);
-            border-radius: 0 0 8px 8px;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+        .chosen-container-single .chosen-single abbr { display: none; }
+        .chosen-container-single .chosen-single div {
+            width: 26px;
         }
-        .chosen-search input {
-            background: #0f1923;
-            color: var(--text-main, #e2e8f0);
-            border: 1px solid var(--border, #2d3f55);
-            border-radius: 6px;
-            padding: 6px 10px;
+        .chosen-container-single .chosen-single div b {
+            background: none !important;
+        }
+        .chosen-container-single .chosen-single div b:after {
+            content: "▾";
+            color: #e2e8f0;
+            font-size: 16px;
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        /* The open dropdown */
+        .chosen-container-single .chosen-drop {
+            background: #1e2a3a !important;
+            border: 1px solid #2d3f55 !important;
+            border-top: none !important;
+            border-radius: 0 0 8px 8px !important;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.5) !important;
+        }
+
+        /* Search box inside dropdown */
+        .chosen-search {
+            background: #1e2a3a !important;
+            padding: 8px !important;
+        }
+        .chosen-search input[type="text"] {
+            background: #0f1923 !important;
+            color: #e2e8f0 !important;
+            border: 1px solid #2d3f55 !important;
+            border-radius: 6px !important;
+            padding: 6px 10px !important;
+            width: 100% !important;
+            box-sizing: border-box !important;
+        }
+        .chosen-search input[type="text"]:focus {
+            border-color: #6366f1 !important;
+            outline: none !important;
+        }
+
+        /* Options list */
+        .chosen-results {
+            background: #1e2a3a !important;
+            color: #e2e8f0 !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            max-height: 240px !important;
         }
         .chosen-results li {
-            color: var(--text-main, #e2e8f0);
-            padding: 8px 12px;
+            color: #e2e8f0 !important;
+            padding: 8px 12px !important;
+            line-height: 1.4 !important;
         }
+        .chosen-results li.active-result:hover,
         .chosen-results li.highlighted {
-            background: var(--accent, #6366f1);
-            color: #fff;
+            background: #6366f1 !important;
+            color: #fff !important;
         }
-        .chosen-results li.active-result:hover {
-            background: rgba(99,102,241,0.2);
+        .chosen-results li.no-results {
+            background: #1e2a3a !important;
+            color: #aaa !important;
         }
     </style>
 </head>
