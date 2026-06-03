@@ -76,6 +76,25 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
+
+    // ── Helpers: format date and time for storage ─────────────────────────────
+    function formatDate(val) {
+        // val = "YYYY-MM-DD" → "MM/DD/YYYY"
+        if (!val) return '';
+        const [y, m, d] = val.split('-');
+        return `${m}/${d}/${y}`;
+    }
+
+    function formatTime(val) {
+        // val = "HH:MM" (24hr) → "HH:MM AM/PM" (12hr)
+        if (!val) return '';
+        let [h, m] = val.split(':');
+        h = parseInt(h, 10);
+        const ampm = h >= 12 ? 'PM' : 'AM';
+        h = h % 12 || 12;
+        return `${String(h).padStart(2, '0')}:${m} ${ampm}`;
+    }
+
     // ── Submit button ─────────────────────────────────────────────────────────
     const submitBtn  = document.getElementById('submitBtn');
     const messageDiv = document.getElementById('formMessage');
@@ -166,10 +185,10 @@ document.addEventListener('DOMContentLoaded', function () {
                 bank_name:          document.getElementById('ContentPlaceHolder1_ddlBank').value,
                 atm_id:             document.getElementById('ContentPlaceHolder1_txtATMID').value,
                 address:            document.getElementById('ContentPlaceHolder1_txt_atmplace').value,
-                date_from:          document.getElementById('txtActualDateTime').value,
-                time_from:          document.getElementById('fromtime').value,
-                date_to:            document.getElementById('txt_todate').value,
-                time_to:            document.getElementById('txt_totime').value,
+                date_from:          formatDate(document.getElementById('txtActualDateTime').value),
+                time_from:          formatTime(document.getElementById('fromtime').value),
+                date_to:            formatDate(document.getElementById('txt_todate').value),
+                time_to:            formatTime(document.getElementById('txt_totime').value),
                 ack_no:             ackEl.value.trim(),
                 camera_footage_for: selectedCameras.join(', '),
                 remarks:            document.getElementById('ContentPlaceHolder1_txt_remark').value,
