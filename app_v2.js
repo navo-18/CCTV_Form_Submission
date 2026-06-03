@@ -155,7 +155,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     // ── Submit button ─────────────────────────────────────────────────────────
-    const submitBtn  = document.getElementById('submitBtn');
+    const submitBtn  = document.getElementById('ContentPlaceHolder1_btnsubmit');
     const messageDiv = document.getElementById('formMessage');
 
     if (!submitBtn) {
@@ -204,7 +204,7 @@ document.addEventListener('DOMContentLoaded', function () {
             return;
         }
 
-        submitBtn.textContent = 'Submitting...';
+        submitBtn.value = 'Submitting...';
         submitBtn.disabled    = true;
 
         try {
@@ -266,7 +266,7 @@ document.addEventListener('DOMContentLoaded', function () {
             messageDiv.textContent = err.message;
             messageDiv.className   = 'message error';
         } finally {
-            submitBtn.textContent = 'Submit Request';
+            submitBtn.value = 'Submit';
             submitBtn.disabled    = false;
         }
     });
