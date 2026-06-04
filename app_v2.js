@@ -148,6 +148,18 @@ document.addEventListener('DOMContentLoaded', function () {
         e.preventDefault();
         console.log("Submit clicked");
 
+        // Debug: log all field values
+        console.log("Bank:", document.getElementById('ContentPlaceHolder1_ddlBank')?.value);
+        console.log("ATM ID:", document.getElementById('ContentPlaceHolder1_txtATMID')?.value);
+        console.log("Address:", document.getElementById('ContentPlaceHolder1_txt_atmplace')?.value);
+        console.log("Date From:", document.getElementById('txtActualDateTime')?.value);
+        console.log("Time From:", document.getElementById('fromtime')?.value);
+        console.log("Date To:", document.getElementById('txt_todate')?.value);
+        console.log("Time To:", document.getElementById('txt_totime')?.value);
+        console.log("Ack No:", document.getElementById('txt_ack_fir_no')?.value);
+        console.log("Camera:", Array.from(document.getElementById('ContentPlaceHolder1_lstCameraFootageForatm')?.selectedOptions || []).map(o=>o.value));
+        console.log("Remarks:", document.getElementById('ContentPlaceHolder1_txt_remark')?.value);
+
         messageDiv.textContent = '';
         messageDiv.className   = 'message';
 
