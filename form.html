@@ -1525,10 +1525,9 @@
                                 <div class="form-group">
                                     <label>Date and Time Of Footage From <span style="color:red">*</span></label>
                                     <input name="ctl00$ContentPlaceHolder1$txtActualDateTime"
-                                           type="text" maxlength="10"
+                                           type="date"
                                            id="txtActualDateTime"
-                                           class="form-control"
-                                           placeholder="MM/DD/YYYY" autocomplete="off" />
+                                           class="form-control" autocomplete="off" />
                                     <span id="ContentPlaceHolder1_datetime_required" class="val-error">Please select from date</span>
                                 </div>
                             </div>
@@ -1538,10 +1537,9 @@
                                 <div class="form-group">
                                     <label>Time <span style="color:red">*</span></label>
                                     <input name="ctl00$ContentPlaceHolder1$fromtime"
-                                           type="text" maxlength="8"
+                                           type="time"
                                            id="fromtime"
-                                           class="form-control"
-                                           placeholder="HH:MM AM/PM" autocomplete="off" />
+                                           class="form-control" autocomplete="off" />
                                     <span id="ContentPlaceHolder1_RequiredFieldValidator2" class="val-error">Please select time</span>
                                 </div>
                             </div>
@@ -1551,10 +1549,9 @@
                                 <div class="form-group">
                                     <label>To Date <span style="color:red">*</span></label>
                                     <input name="ctl00$ContentPlaceHolder1$txt_todate"
-                                           type="text" maxlength="10"
+                                           type="date"
                                            id="txt_todate"
-                                           class="form-control"
-                                           placeholder="MM/DD/YYYY" autocomplete="off" />
+                                           class="form-control" autocomplete="off" />
                                     <span id="ContentPlaceHolder1_rr_todate" class="val-error">Please select To date</span>
                                 </div>
                             </div>
@@ -1564,10 +1561,9 @@
                                 <div class="form-group">
                                     <label>Time <span style="color:red">*</span></label>
                                     <input name="ctl00$ContentPlaceHolder1$txt_totime"
-                                           type="text" maxlength="8"
+                                           type="time"
                                            id="txt_totime"
-                                           class="form-control"
-                                           placeholder="HH:MM AM/PM" autocomplete="off" />
+                                           class="form-control" autocomplete="off" />
                                     <span id="ContentPlaceHolder1_RequiredFieldValidator3" class="val-error">Please select time</span>
                                 </div>
                             </div>
@@ -1836,38 +1832,9 @@ async function handleFormSubmit() {
         btn.value = 'Submit';
     }
 }
-// ── Date auto-mask MM/DD/YYYY ─────────────────────────────────────────────────
-function maskDate(e) {
-    if (e.inputType === 'deleteContentBackward') return;
-    let v = e.target.value.replace(/\D/g, '');
-    if (v.length > 8) v = v.substring(0, 8);
-    if (v.length >= 5)      e.target.value = v.slice(0,2) + '/' + v.slice(2,4) + '/' + v.slice(4,8);
-    else if (v.length >= 3) e.target.value = v.slice(0,2) + '/' + v.slice(2,4);
-    else                    e.target.value = v;
-}
-['txtActualDateTime', 'txt_todate'].forEach(function(id) {
-    var el = document.getElementById(id);
-    if (el) el.addEventListener('input', maskDate);
-});
-
-// ── Time auto-mask HH:MM AM/PM ────────────────────────────────────────────────
-function maskTime(e) {
-    if (e.inputType === 'deleteContentBackward') return;
-    var raw    = e.target.value.toUpperCase();
-    var digits = raw.replace(/\D/g, '').substring(0, 4);
-    var hasAM  = raw.indexOf('A') !== -1;
-    var hasPM  = raw.indexOf('P') !== -1;
-    var out    = digits.length >= 3 ? digits.slice(0,2) + ':' + digits.slice(2,4) : digits;
-    if (digits.length === 4) {
-        if (hasAM)      out += ' AM';
-        else if (hasPM) out += ' PM';
-    }
-    e.target.value = out;
-}
-['fromtime', 'txt_totime'].forEach(function(id) {
-    var el = document.getElementById(id);
-    if (el) el.addEventListener('input', maskTime);
-});
+// Native type="date" and type="time" inputs automatically use the system locale format.
+// No manual masking needed — the browser handles MM/DD/YYYY vs DD/MM/YYYY
+// and 12hr vs 24hr based on the OS language/region settings.
 
 </script>
 
