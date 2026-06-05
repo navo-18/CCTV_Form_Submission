@@ -1,0 +1,896 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Cyber Police Portal - CCTV Request List</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.8.7/chosen.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+    <script type="text/javascript">
+        // Stop form submission on Enter key (matching actual site)
+        function stopRKey(evt) {
+            var evt = (evt) ? evt : ((event) ? event : null);
+            var node = (evt.target) ? evt.target : ((evt.srcElement) ? evt.srcElement : null);
+            if ((evt.keyCode == 13) && (node.type == "text")) { return false; }
+        }
+        document.onkeypress = stopRKey;
+    </script>
+
+    <script type="text/javascript">
+        function preventBack() { window.history.forward(); }
+        setTimeout("preventBack()", 0);
+        window.onunload = function () { null };
+    </script>
+
+    <script>
+        if (window.history.replaceState) {
+            window.history.replaceState(null, null, window.location.href);
+        }
+    </script>
+
+    <script>
+        // Prevent clearing date fields (matching actual site)
+        window.addEventListener("load", function () {
+            const ids = ["txtfldFromDate", "txtfldToDate"];
+            ids.forEach(function (id) {
+                const dateInput = document.getElementById(id);
+                if (!dateInput) return;
+                dateInput.dataset.last = dateInput.value;
+                dateInput.addEventListener("input", function (e) {
+                    if (this.value === "") {
+                        e.preventDefault();
+                        this.value = this.dataset.last || "";
+                    } else {
+                        this.dataset.last = this.value;
+                    }
+                });
+            });
+        });
+    </script>
+
+    <script>
+        function textCounter(field, cnt, maxlimit) {
+            var cntfield = document.getElementById(cnt);
+            if (field.value.length > maxlimit)
+                field.value = field.value.substring(0, maxlimit);
+            else
+                cntfield.value = maxlimit - field.value.length;
+        }
+        function isNumber(event) {
+            var charCode = event.which || event.keyCode;
+            return charCode >= 48 && charCode <= 57;
+        }
+        function WebForm_TextBoxKeyHandler(event) { return true; }
+        function __doPostBack(eventTarget, eventArgument) {
+            console.log("[ASP.NET] __doPostBack:", eventTarget);
+            simulatePostBack(eventTarget);
+        }
+        function WebForm_DoPostBackWithOptions(options) {
+            console.log("[ASP.NET] WebForm_DoPostBackWithOptions:", options);
+            handleSearch();
+        }
+        function WebForm_PostBackOptions(t, a, v, vg, au, tf, cs) {
+            this.target = t; this.validation = v;
+        }
+        function Sys_init() {}
+        var Sys = { WebForms: { PageRequestManager: {
+            _initialize: function() { console.log("[ASP.NET] PageRequestManager init"); },
+            getInstance: function() { return { add_endRequest: function(fn) {} }; }
+        }}, Application: { add_init: function(fn) {} }};
+    </script>
+
+    <style>
+        body { background: #f5f5f5; font-family: Arial, sans-serif; font-size: 13px; }
+        .navbar { background: #1a1a2e; border: none; border-radius: 0; margin-bottom: 0; }
+        .navbar-brand { color: #fff !important; font-weight: bold; font-size: 18px; }
+        .navbar-text { color: #ccc !important; }
+        .navbar-nav > li > a { color: #ccc !important; }
+        .navbar-nav > li > a:hover { color: #fff !important; background: rgba(255,255,255,0.1) !important; }
+
+        .sidebar { width: 220px; background: #222d32; min-height: 100vh; position: fixed; top: 51px; left: 0; }
+        .sidebar ul { list-style: none; padding: 0; margin: 0; }
+        .sidebar ul li a {
+            display: block; padding: 12px 20px;
+            color: #b8c7ce; text-decoration: none; font-size: 13px;
+            border-bottom: 1px solid #1a2226;
+        }
+        .sidebar ul li a:hover, .sidebar ul li.active a {
+            background: #1e282c; color: #fff;
+        }
+        .sidebar ul li a i { margin-right: 8px; width: 16px; }
+        .sidebar-header {
+            padding: 10px 20px; color: #4b646f;
+            font-size: 11px; text-transform: uppercase;
+            font-weight: bold; letter-spacing: 1px;
+            border-bottom: 1px solid #1a2226;
+        }
+
+        .content-wrapper { margin-left: 220px; padding: 20px; min-height: calc(100vh - 51px); }
+
+        .page-header-box {
+            background: #fff; border-left: 4px solid #337ab7;
+            padding: 12px 20px; margin-bottom: 20px;
+            border-radius: 0 4px 4px 0;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .page-header-box h3 { margin: 0; font-size: 18px; color: #333; }
+        .page-header-box small { color: #888; font-size: 12px; }
+
+        .panel { border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .panel-heading { font-weight: bold; font-size: 14px; }
+        .panel-primary > .panel-heading { background: #337ab7; border-color: #337ab7; }
+        .panel-info > .panel-heading { background: #5bc0de; border-color: #5bc0de; }
+
+        .form-control { font-size: 13px; height: 32px; }
+        textarea.form-control { height: auto; }
+        label { font-weight: bold; font-size: 12px; color: #555; margin-bottom: 3px; }
+        .form-group { margin-bottom: 12px; }
+
+        /* Results table */
+        .table { font-size: 12px; }
+        .table > thead > tr > th {
+            background: #337ab7; color: #fff;
+            padding: 8px; vertical-align: middle;
+            border: 1px solid #2e6da4;
+        }
+        .table > tbody > tr > td {
+            padding: 6px 8px; vertical-align: middle;
+            border: 1px solid #ddd;
+        }
+        .table > tbody > tr:hover { background: #f0f7ff; }
+        .table-striped > tbody > tr:nth-of-type(odd) { background: #f9f9f9; }
+
+        /* Status badges */
+        .badge-pending { background: #f0ad4e; color: #fff; padding: 3px 8px; border-radius: 3px; font-size: 11px; }
+        .badge-approved { background: #5cb85c; color: #fff; padding: 3px 8px; border-radius: 3px; font-size: 11px; }
+        .badge-rejected { background: #d9534f; color: #fff; padding: 3px 8px; border-radius: 3px; font-size: 11px; }
+        .badge-processing { background: #5bc0de; color: #fff; padding: 3px 8px; border-radius: 3px; font-size: 11px; }
+
+        /* Download button */
+        .btn-download {
+            background: #5cb85c; color: #fff;
+            border: none; padding: 4px 10px;
+            border-radius: 3px; font-size: 11px; cursor: pointer;
+        }
+        .btn-download:hover { background: #449d44; }
+        .btn-download:disabled { background: #aaa; cursor: not-allowed; }
+
+        /* Postback overlay */
+        #postbackOverlay {
+            display: none; position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(255,255,255,0.7); z-index: 9999;
+            align-items: center; justify-content: center;
+        }
+        #postbackOverlay.active { display: flex; }
+        .loading-box {
+            background: #fff; border: 1px solid #ccc;
+            padding: 20px 30px; border-radius: 4px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            font-size: 14px; color: #333; text-align: center;
+        }
+
+        /* Modal video player area */
+        #videoPlayerArea {
+            background: #000; min-height: 200px;
+            display: flex; align-items: center; justify-content: center;
+            color: #fff; border-radius: 4px; margin-bottom: 15px;
+            font-size: 14px;
+        }
+
+        /* Pagination */
+        .pagination-ys { padding-left: 0; margin: 20px 0; border-radius: 4px; }
+        .pagination-ys li { display: inline; }
+        .pagination-ys li a, .pagination-ys li span {
+            position: relative; float: left; padding: 6px 10px;
+            line-height: 1.42857143; text-decoration: none;
+            color: #dd4814; background-color: #fff;
+            border: 1px solid #ddd; margin-left: -1px; font-size: 12px;
+        }
+        .pagination-ys li.active span {
+            background: #337ab7; color: #fff; border-color: #337ab7;
+        }
+        .pagination-ys li a:hover { background: #eee; }
+
+        /* Log */
+        #activityLog {
+            background: #1e1e1e; color: #00ff00;
+            font-family: monospace; font-size: 11px;
+            padding: 8px; border-radius: 4px;
+            max-height: 120px; overflow-y: auto;
+        }
+
+        .footer_bottom {
+            background: #222d32; color: #aaa;
+            text-align: center; padding: 10px;
+            font-size: 11px; margin-left: 220px;
+        }
+    </style>
+</head>
+<body class="skin-black-light sidebar-mini">
+
+<!-- PostBack Overlay -->
+<div id="postbackOverlay">
+    <div class="loading-box">
+        <i class="fa fa-spinner fa-spin fa-2x" style="color:#337ab7"></i><br><br>
+        Processing request...
+    </div>
+</div>
+
+<!-- Hidden ASP.NET fields -->
+<input type="hidden" name="__EVENTTARGET" id="__EVENTTARGET" value="" />
+<input type="hidden" name="__EVENTARGUMENT" id="__EVENTARGUMENT" value="" />
+<input type="hidden" name="__LASTFOCUS" id="__LASTFOCUS" value="" />
+<input type="hidden" name="__VIEWSTATE" id="__VIEWSTATE" value="simulatedViewState" />
+
+<!-- Navbar -->
+<nav class="navbar navbar-static-top" role="navigation">
+    <div class="navbar-header">
+        <span class="navbar-brand">
+            <i class="fa fa-shield"></i> Cyber Police Portal
+        </span>
+    </div>
+    <div class="navbar-collapse">
+        <ul class="nav navbar-nav navbar-right">
+            <li><a href="#"><i class="fa fa-user"></i> Officer Name</a></li>
+            <li><a href="index.html"><i class="fa fa-sign-out"></i> Logout</a></li>
+        </ul>
+    </div>
+</nav>
+
+<!-- Sidebar -->
+<div class="sidebar">
+    <div class="sidebar-header">Navigation</div>
+    <ul>
+        <li><a href="form.html"><i class="fa fa-plus-circle"></i> Raise CCTV Request</a></li>
+        <li class="active"><a href="download.html"><i class="fa fa-download"></i> Download CCTV Footage</a></li>
+        <li><a href="#"><i class="fa fa-list"></i> My Requests</a></li>
+        <li><a href="#"><i class="fa fa-history"></i> Request History</a></li>
+    </ul>
+</div>
+
+<!-- Main Content -->
+<div class="content-wrapper">
+
+    <div class="page-header-box">
+        <h3><i class="fa fa-download"></i> Download CCTV Footage</h3>
+        <small>Search and download video recordings provided by the bank</small>
+    </div>
+
+    <!-- Search / Filter Panel -->
+    <div class="panel panel-primary">
+        <div class="panel-heading">
+            <i class="fa fa-search"></i> Search Requests
+        </div>
+        <div class="panel-body">
+            <div class="row">
+                <!-- Request ID -->
+                <div class="col-lg-3 col-md-4">
+                    <div class="form-group">
+                        <label>Request ID</label>
+                        <input type="text" name="ctl00$ContentPlaceHolder1$txt_Requestid"
+                               id="txt_Requestid"
+                               class="form-control"
+                               placeholder="Enter Request ID"
+                               autocomplete="off"
+                               onkeypress="return isNumber(event)" />
+                    </div>
+                </div>
+
+                <!-- Acknowledgement No -->
+                <div class="col-lg-3 col-md-4">
+                    <div class="form-group">
+                        <label>Acknowledgement No</label>
+                        <input type="text" name="ctl00$ContentPlaceHolder1$txt_ack_fir_no"
+                               id="txt_ack_fir_no"
+                               class="form-control"
+                               placeholder="Enter 14 digit Ack No"
+                               maxlength="14" autocomplete="off"
+                               onkeypress="return isNumber(event)" />
+                        <span id="ContentPlaceHolder1_CV_txt_ack_fir_no"
+                              style="color:red; font-size:11px; display:none;">
+                            Enter the 14 digit acknowledgement number!
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Bank Name -->
+                <div class="col-lg-3 col-md-4">
+                    <div class="form-group">
+                        <label>Bank Name</label>
+                        <select name="ctl00$ContentPlaceHolder1$ddlBank_search"
+                                id="ContentPlaceHolder1_ddlBank_search"
+                                class="form-control chzn-select">
+                            <option value="">-- All Banks --</option>
+                            <option value="SBI">State Bank of India</option>
+                            <option value="PNB">Punjab National Bank</option>
+                            <option value="BOB">Bank of Baroda</option>
+                            <option value="CANARA">Canara Bank</option>
+                            <option value="UNION">Union Bank of India</option>
+                            <option value="HDFC">HDFC Bank</option>
+                            <option value="ICICI">ICICI Bank</option>
+                            <option value="AXIS">Axis Bank</option>
+                            <option value="KOTAK">Kotak Mahindra Bank</option>
+                            <option value="YES">Yes Bank</option>
+                            <option value="INDUSIND">IndusInd Bank</option>
+                            <option value="IDBI">IDBI Bank</option>
+                            <option value="BOI">Bank of India</option>
+                            <option value="CBI">Central Bank of India</option>
+                            <option value="IOB">Indian Overseas Bank</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Status -->
+                <div class="col-lg-3 col-md-4">
+                    <div class="form-group">
+                        <label>Status</label>
+                        <select name="ctl00$ContentPlaceHolder1$ddlStatus"
+                                id="ContentPlaceHolder1_ddlStatus"
+                                class="form-control">
+                            <option value="">-- All Status --</option>
+                            <option value="Pending">Pending</option>
+                            <option value="Processing">Processing</option>
+                            <option value="Approved">Approved / Ready to Download</option>
+                            <option value="Rejected">Rejected</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <!-- From Date -->
+                <div class="col-lg-3 col-md-4">
+                    <div class="form-group">
+                        <label>From Date <span style="color:red">*</span></label>
+                        <input type="date" name="ctl00$ContentPlaceHolder1$txtfldFromDate"
+                               id="txtfldFromDate"
+                               class="form-control"
+                               autocomplete="off" />
+                        <span style="color:red; font-size:11px; display:none;"
+                              id="span_fromdate_req">Please select From Date</span>
+                    </div>
+                </div>
+
+                <!-- To Date -->
+                <div class="col-lg-3 col-md-4">
+                    <div class="form-group">
+                        <label>To Date <span style="color:red">*</span></label>
+                        <input type="date" name="ctl00$ContentPlaceHolder1$txtfldToDate"
+                               id="txtfldToDate"
+                               class="form-control"
+                               autocomplete="off" />
+                        <span style="color:red; font-size:11px; display:none;"
+                              id="span_todate_req">Please select To Date</span>
+                    </div>
+                </div>
+
+                <!-- ATM ID -->
+                <div class="col-lg-3 col-md-4">
+                    <div class="form-group">
+                        <label>ATM ID</label>
+                        <input type="text" name="ctl00$ContentPlaceHolder1$txtATMID_search"
+                               id="ContentPlaceHolder1_txtATMID_search"
+                               class="form-control"
+                               placeholder="Enter ATM ID"
+                               autocomplete="off" />
+                    </div>
+                </div>
+
+                <!-- Search + Reset buttons -->
+                <div class="col-lg-3 col-md-4">
+                    <div class="form-group">
+                        <label>&nbsp;</label><br>
+                        <input type="submit"
+                               name="ctl00$ContentPlaceHolder1$btnSearch"
+                               id="ContentPlaceHolder1_btnSearch"
+                               value="Search"
+                               onclick="javascript:WebForm_DoPostBackWithOptions(new WebForm_PostBackOptions('ctl00$ContentPlaceHolder1$btnSearch','',true,'','',false,false))"
+                               class="btn btn-primary btn-sm"
+                               style="margin-right:5px;" />
+                        <input type="button"
+                               name="ctl00$ContentPlaceHolder1$btnReset"
+                               id="ContentPlaceHolder1_btnReset"
+                               value="Reset"
+                               onclick="resetSearch()"
+                               class="btn btn-default btn-sm" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Results Panel -->
+    <div class="panel panel-info" id="resultsPanel">
+        <div class="panel-heading">
+            <i class="fa fa-table"></i> Request Results
+            <span class="pull-right" id="resultCount" style="font-size:12px; font-weight:normal;">
+                Showing <b id="shownCount">0</b> records
+            </span>
+        </div>
+        <div class="panel-body" style="padding:0;">
+            <div class="table-responsive">
+                <table class="table table-striped table-bordered table-hover" id="resultsTable">
+                    <thead>
+                        <tr>
+                            <th>Sr. No.</th>
+                            <th>Request ID</th>
+                            <th>Bank Name</th>
+                            <th>ATM ID</th>
+                            <th>Ack No</th>
+                            <th>Date From</th>
+                            <th>Date To</th>
+                            <th>Camera For</th>
+                            <th>Submitted On</th>
+                            <th>Status</th>
+                            <th>Remark</th>
+                            <th>Download</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="resultsBody">
+                        <tr>
+                            <td colspan="13" style="text-align:center; color:#888; padding:30px;">
+                                <i class="fa fa-info-circle"></i>
+                                Use the search filters above and click <b>Search</b> to view requests.
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Activity Log -->
+    <div style="margin-top:10px;">
+        <strong style="font-size:12px;">🔍 PostBack Activity Log</strong>
+        <div id="activityLog">Ready...<br></div>
+    </div>
+
+</div><!-- /content-wrapper -->
+
+<!-- ═══════════════════════════════════════════════════════════
+     MODAL 1: View Request Details + Reply
+═══════════════════════════════════════════════════════════ -->
+<div class="modal fade" id="modalRequestDetail" role="dialog">
+    <div class="modal-dialog" style="width:800px;" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="background:#337ab7; color:#fff;">
+                <button type="button" class="close" data-dismiss="modal" style="color:#fff;">
+                    <span>&times;</span>
+                </button>
+                <h5 class="modal-title">
+                    Request Details — ID: <b><span id="modalReqId"></span></b>
+                </h5>
+            </div>
+            <div class="modal-body">
+                <table class="table table-bordered" style="font-size:12px;">
+                    <tr><th width="180">Bank Name</th><td id="d_bank"></td>
+                        <th width="180">ATM ID</th><td id="d_atmid"></td></tr>
+                    <tr><th>Address</th><td colspan="3" id="d_address"></td></tr>
+                    <tr><th>Date From</th><td id="d_datefrom"></td>
+                        <th>Time From</th><td id="d_timefrom"></td></tr>
+                    <tr><th>Date To</th><td id="d_dateto"></td>
+                        <th>Time To</th><td id="d_timeto"></td></tr>
+                    <tr><th>Ack No</th><td id="d_ack"></td>
+                        <th>Camera Footage</th><td id="d_camera"></td></tr>
+                    <tr><th>Submitted On</th><td id="d_submitted"></td>
+                        <th>Status</th><td id="d_status"></td></tr>
+                    <tr><th>Remarks</th><td colspan="3" id="d_remarks"></td></tr>
+                    <tr><th>Notice File</th>
+                        <td colspan="3"><a id="d_filelink" href="#" target="_blank">View uploaded notice</a></td>
+                    </tr>
+                </table>
+
+                <!-- Reply section -->
+                <div style="margin-top:15px;">
+                    <label>Reply / Action Remark
+                        <small style="color:#888;">(Only Alphanumeric , . - ():/  allowed. Max 250 chars)</small>
+                    </label>
+                    <textarea name="ctl00$ContentPlaceHolder1$txtreplyremarks"
+                              id="ContentPlaceHolder1_txtreplyremarks"
+                              rows="3" maxlength="250"
+                              class="form-control"
+                              placeholder="(Only Alphanumeric , . - () ! are allowed. Max 250 characters)"
+                              onKeyUp="textCounter(this,'replycharcount',250)"
+                              onChange="textCounter(this,'replycharcount',250)"></textarea>
+                    <small><input readonly type="text" id="replycharcount" value="250"
+                                  style="width:35px; color:red; border:none; background:transparent; font-weight:bold;" />
+                        characters remaining</small>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success btn-sm"
+                        onclick="submitReply()"
+                        id="ContentPlaceHolder1_btnReply">
+                    <i class="fa fa-reply"></i> Submit Reply
+                </button>
+                <button type="button" class="btn btn-secondary btn-sm"
+                        data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     MODAL 2: Download Video
+═══════════════════════════════════════════════════════════ -->
+<div class="modal fade" id="modalDownload" role="dialog">
+    <div class="modal-dialog" style="width:750px;" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="background:#5cb85c; color:#fff;">
+                <button type="button" class="close" data-dismiss="modal" style="color:#fff;">
+                    <span>&times;</span>
+                </button>
+                <h5 class="modal-title">
+                    <i class="fa fa-download"></i>
+                    Download CCTV Footage — Request ID: <b><span id="dlReqId"></span></b>
+                </h5>
+            </div>
+            <div class="modal-body">
+                <!-- Request summary -->
+                <div class="row" style="margin-bottom:15px; font-size:12px; background:#f9f9f9; padding:10px; border-radius:4px;">
+                    <div class="col-sm-4"><b>Bank:</b> <span id="dl_bank"></span></div>
+                    <div class="col-sm-4"><b>ATM ID:</b> <span id="dl_atmid"></span></div>
+                    <div class="col-sm-4"><b>Ack No:</b> <span id="dl_ack"></span></div>
+                    <div class="col-sm-6"><b>Date/Time From:</b> <span id="dl_from"></span></div>
+                    <div class="col-sm-6"><b>Date/Time To:</b> <span id="dl_to"></span></div>
+                    <div class="col-sm-12"><b>Camera:</b> <span id="dl_camera"></span></div>
+                </div>
+
+                <!-- Video player area -->
+                <div id="videoPlayerArea">
+                    <div style="text-align:center;">
+                        <i class="fa fa-video-camera fa-3x" style="color:#555; margin-bottom:10px; display:block;"></i>
+                        <span id="videoPlaceholderText">
+                            Video footage will appear here when bank uploads the recording.
+                        </span>
+                        <br><br>
+                        <video id="videoPlayer" controls style="display:none; max-width:100%; max-height:300px;">
+                            <source id="videoSource" src="" type="video/mp4">
+                            Your browser does not support the video tag.
+                        </video>
+                    </div>
+                </div>
+
+                <!-- Available files list -->
+                <div id="filesSection">
+                    <label style="margin-top:10px;">Available Files</label>
+                    <table class="table table-bordered table-sm" style="font-size:12px;" id="filesTable">
+                        <thead>
+                            <tr style="background:#5cb85c; color:#fff;">
+                                <th>Sr.</th>
+                                <th>File Name</th>
+                                <th>Camera Type</th>
+                                <th>File Size</th>
+                                <th>Uploaded On</th>
+                                <th>Download</th>
+                            </tr>
+                        </thead>
+                        <tbody id="filesBody">
+                            <tr>
+                                <td colspan="6" style="text-align:center; color:#888; padding:20px;">
+                                    No files uploaded yet by the bank.
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Suspect detail section -->
+                <div style="margin-top:10px;">
+                    <label>Suspect Detail Remark</label>
+                    <textarea name="ctl00$ContentPlaceHolder1$txt_susptremarks"
+                              id="ContentPlaceHolder1_txt_susptremarks"
+                              rows="2" maxlength="250"
+                              class="form-control"
+                              placeholder="(Only Alphanumeric , . - () ! are allowed. Max 250 characters)"
+                              onKeyUp="textCounter(this,'suspectcharcount',250)"
+                              onChange="textCounter(this,'suspectcharcount',250)"></textarea>
+                    <small><input readonly type="text" id="suspectcharcount" value="250"
+                                  style="width:35px; color:red; border:none; background:transparent; font-weight:bold;" />
+                        characters remaining</small>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success btn-sm"
+                        id="btnDownloadAll" onclick="downloadAllFiles()">
+                    <i class="fa fa-download"></i> Download All Files
+                </button>
+                <button type="button" class="btn btn-secondary btn-sm"
+                        data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Hidden trigger buttons matching actual ASP.NET site -->
+<button type="button" id="btnpopup" class="btn btn-primary"
+        data-toggle="modal" style="display:none"
+        data-target="#modalRequestDetail"></button>
+<button type="button" id="btnsuspectpopup" class="btn btn-primary"
+        data-toggle="modal" style="display:none"
+        data-target="#modalDownload"></button>
+<button type="button" id="btnreply" style="display:none"></button>
+<button type="button" id="btnraisedhistory" style="display:none"></button>
+
+<!-- Footer -->
+<div class="footer_bottom">
+    <p style="margin:0;">Website Content Managed by Ministry of Home Affairs, Govt. of India.
+        Best viewed in Mozilla Firefox, Google Chrome.</p>
+</div>
+
+<!-- Scripts -->
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.8.7/chosen.jquery.min.js"></script>
+
+<script>
+$(document).ready(function() {
+    // Init Chosen on bank search dropdown
+    $('#ContentPlaceHolder1_ddlBank_search').chosen({
+        search_contains: true,
+        placeholder_text_single: '-- All Banks --',
+        no_results_text: 'No bank found:'
+    });
+
+    // Re-init after postback (matching actual site pattern)
+    var prm = Sys.WebForms.PageRequestManager.getInstance();
+    prm.add_endRequest(function() {
+        $('.chzn-select').chosen();
+    });
+
+    // Set default dates (today and 30 days ago)
+    var today = new Date();
+    var prior = new Date(); prior.setDate(prior.getDate() - 30);
+    document.getElementById('txtfldToDate').value   = today.toISOString().split('T')[0];
+    document.getElementById('txtfldFromDate').value = prior.toISOString().split('T')[0];
+});
+
+// ── Simulated data ────────────────────────────────────────────────────────────
+var sampleData = [
+    { id: 'REQ001', bank: 'State Bank of India', atmid: 'SBI01', ack: '12345678901234',
+      datefrom: '05/10/2026', timefrom: '10:00 AM', dateto: '05/10/2026', timeto: '11:00 AM',
+      camera: 'Pinhole Camera, ATM Room Camera', submitted: '05/12/2026',
+      status: 'Approved', remarks: 'Test remark',
+      address: 'Near Bus Stand, Jodhpur, Rajasthan - 342001',
+      fileurl: '#', files: [
+          { name: 'Pinhole_SBI01_05102026.mp4', camera: 'Pinhole Camera', size: '245 MB', uploaded: '05/13/2026', url: '#' },
+          { name: 'ATMRoom_SBI01_05102026.mp4', camera: 'ATM Room Camera', size: '312 MB', uploaded: '05/13/2026', url: '#' }
+      ]},
+    { id: 'REQ002', bank: 'HDFC Bank', atmid: 'HDFC05', ack: '98765432109876',
+      datefrom: '05/11/2026', timefrom: '02:30 PM', dateto: '05/11/2026', timeto: '03:30 PM',
+      camera: 'ATM Room Camera', submitted: '05/12/2026',
+      status: 'Pending', remarks: 'Urgent request',
+      address: 'Main Market, Ajmer, Rajasthan - 305001',
+      fileurl: '#', files: [] },
+    { id: 'REQ003', bank: 'ICICI Bank', atmid: 'ICICI12', ack: '11223344556677',
+      datefrom: '05/08/2026', timefrom: '08:00 AM', dateto: '05/08/2026', timeto: '09:00 AM',
+      camera: 'Pinhole Camera', submitted: '05/09/2026',
+      status: 'Processing', remarks: 'Under review',
+      address: 'Station Road, Jaipur, Rajasthan - 302001',
+      fileurl: '#', files: [] },
+    { id: 'REQ004', bank: 'Punjab National Bank', atmid: 'PNB22', ack: '55667788990011',
+      datefrom: '05/05/2026', timefrom: '11:00 AM', dateto: '05/05/2026', timeto: '12:00 PM',
+      camera: 'Pinhole Camera, ATM Room Camera', submitted: '05/06/2026',
+      status: 'Rejected', remarks: 'Insufficient details provided',
+      address: 'Civil Lines, Bikaner, Rajasthan - 334001',
+      fileurl: '#', files: [] }
+];
+
+var currentData = [];
+var currentDownloadRow = null;
+
+// ── PostBack simulation ───────────────────────────────────────────────────────
+function simulatePostBack(target) {
+    var overlay = document.getElementById('postbackOverlay');
+    overlay.classList.add('active');
+    logActivity('[PostBack] Triggered: ' + target);
+    setTimeout(function() {
+        overlay.classList.remove('active');
+        logActivity('[PostBack] UpdatePanel refreshed ✓');
+    }, 700);
+}
+
+function logActivity(msg) {
+    var log = document.getElementById('activityLog');
+    log.innerHTML += new Date().toLocaleTimeString() + ' ' + msg + '<br>';
+    log.scrollTop = log.scrollHeight;
+}
+
+// ── Search ────────────────────────────────────────────────────────────────────
+function handleSearch() {
+    var fromDate = document.getElementById('txtfldFromDate').value;
+    var toDate   = document.getElementById('txtfldToDate').value;
+
+    if (!fromDate) {
+        document.getElementById('span_fromdate_req').style.display = 'block';
+        return;
+    }
+    document.getElementById('span_fromdate_req').style.display = 'none';
+
+    if (!toDate) {
+        document.getElementById('span_todate_req').style.display = 'block';
+        return;
+    }
+    document.getElementById('span_todate_req').style.display = 'none';
+
+    var overlay = document.getElementById('postbackOverlay');
+    overlay.classList.add('active');
+    logActivity('[Search] Querying server with filters...');
+
+    setTimeout(function() {
+        overlay.classList.remove('active');
+
+        var reqId  = document.getElementById('txt_Requestid').value.trim().toUpperCase();
+        var ack    = document.getElementById('txt_ack_fir_no').value.trim();
+        var bank   = document.getElementById('ContentPlaceHolder1_ddlBank_search').value;
+        var status = document.getElementById('ContentPlaceHolder1_ddlStatus').value;
+        var atmid  = document.getElementById('ContentPlaceHolder1_txtATMID_search').value.trim().toUpperCase();
+
+        currentData = sampleData.filter(function(r) {
+            if (reqId  && r.id.toUpperCase().indexOf(reqId)   === -1) return false;
+            if (ack    && r.ack.indexOf(ack)                  === -1) return false;
+            if (bank   && r.bank.indexOf(bank)                === -1) return false;
+            if (status && r.status !== status)                         return false;
+            if (atmid  && r.atmid.toUpperCase().indexOf(atmid)=== -1) return false;
+            return true;
+        });
+
+        renderResults(currentData);
+        logActivity('[Search] Found ' + currentData.length + ' record(s)');
+    }, 700);
+}
+
+// ── Render results table ──────────────────────────────────────────────────────
+function renderResults(data) {
+    var tbody = document.getElementById('resultsBody');
+    document.getElementById('shownCount').textContent = data.length;
+
+    if (data.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="13" style="text-align:center;color:#888;padding:30px;">' +
+            '<i class="fa fa-exclamation-circle"></i> No records found for the selected filters.</td></tr>';
+        return;
+    }
+
+    var html = '';
+    data.forEach(function(r, i) {
+        var statusBadge = '';
+        if      (r.status === 'Pending')    statusBadge = '<span class="badge-pending">Pending</span>';
+        else if (r.status === 'Approved')   statusBadge = '<span class="badge-approved">Approved</span>';
+        else if (r.status === 'Rejected')   statusBadge = '<span class="badge-rejected">Rejected</span>';
+        else if (r.status === 'Processing') statusBadge = '<span class="badge-processing">Processing</span>';
+
+        var dlBtn = r.status === 'Approved'
+            ? '<button class="btn-download" onclick="openDownload(' + i + ')"><i class="fa fa-download"></i> Download</button>'
+            : '<button class="btn-download" disabled title="Not ready yet"><i class="fa fa-clock-o"></i> Not Ready</button>';
+
+        html += '<tr>' +
+            '<td>' + (i+1) + '</td>' +
+            '<td><b>' + r.id + '</b></td>' +
+            '<td>' + r.bank + '</td>' +
+            '<td>' + r.atmid + '</td>' +
+            '<td>' + r.ack + '</td>' +
+            '<td>' + r.datefrom + '</td>' +
+            '<td>' + r.dateto + '</td>' +
+            '<td>' + r.camera + '</td>' +
+            '<td>' + r.submitted + '</td>' +
+            '<td>' + statusBadge + '</td>' +
+            '<td>' + r.remarks + '</td>' +
+            '<td>' + dlBtn + '</td>' +
+            '<td>' +
+                '<button class="btn btn-xs btn-info" onclick="openDetail(' + i + ')">' +
+                '<i class="fa fa-eye"></i> View</button>' +
+            '</td>' +
+        '</tr>';
+    });
+    tbody.innerHTML = html;
+}
+
+// ── View detail modal ─────────────────────────────────────────────────────────
+function openDetail(idx) {
+    var r = currentData[idx];
+    document.getElementById('modalReqId').textContent  = r.id;
+    document.getElementById('d_bank').textContent      = r.bank;
+    document.getElementById('d_atmid').textContent     = r.atmid;
+    document.getElementById('d_address').textContent   = r.address;
+    document.getElementById('d_datefrom').textContent  = r.datefrom;
+    document.getElementById('d_timefrom').textContent  = r.timefrom;
+    document.getElementById('d_dateto').textContent    = r.dateto;
+    document.getElementById('d_timeto').textContent    = r.timeto;
+    document.getElementById('d_ack').textContent       = r.ack;
+    document.getElementById('d_camera').textContent    = r.camera;
+    document.getElementById('d_submitted').textContent = r.submitted;
+    document.getElementById('d_status').textContent    = r.status;
+    document.getElementById('d_remarks').textContent   = r.remarks;
+    document.getElementById('d_filelink').href         = r.fileurl;
+    logActivity('[View] Opened details for ' + r.id);
+    $('#modalRequestDetail').modal('show');
+}
+
+// ── Download modal ────────────────────────────────────────────────────────────
+function openDownload(idx) {
+    var r = currentData[idx];
+    currentDownloadRow = r;
+    document.getElementById('dlReqId').textContent  = r.id;
+    document.getElementById('dl_bank').textContent  = r.bank;
+    document.getElementById('dl_atmid').textContent = r.atmid;
+    document.getElementById('dl_ack').textContent   = r.ack;
+    document.getElementById('dl_from').textContent  = r.datefrom + ' ' + r.timefrom;
+    document.getElementById('dl_to').textContent    = r.dateto   + ' ' + r.timeto;
+    document.getElementById('dl_camera').textContent= r.camera;
+
+    // Render files table
+    var fbody = document.getElementById('filesBody');
+    if (r.files && r.files.length > 0) {
+        var fhtml = '';
+        r.files.forEach(function(f, fi) {
+            fhtml += '<tr>' +
+                '<td>' + (fi+1) + '</td>' +
+                '<td>' + f.name + '</td>' +
+                '<td>' + f.camera + '</td>' +
+                '<td>' + f.size + '</td>' +
+                '<td>' + f.uploaded + '</td>' +
+                '<td><a href="' + f.url + '" class="btn btn-success btn-xs" download>' +
+                    '<i class="fa fa-download"></i> Download</a></td>' +
+            '</tr>';
+        });
+        fbody.innerHTML = fhtml;
+        document.getElementById('videoPlaceholderText').textContent = 'Click a file below to preview or download.';
+    } else {
+        fbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:#888;padding:20px;">' +
+            'No files uploaded yet by the bank.</td></tr>';
+    }
+
+    logActivity('[Download] Opened download panel for ' + r.id);
+    $('#modalDownload').modal('show');
+}
+
+function downloadAllFiles() {
+    if (!currentDownloadRow || currentDownloadRow.files.length === 0) {
+        alert('No files available to download.');
+        return;
+    }
+    logActivity('[Download] Downloading all ' + currentDownloadRow.files.length + ' file(s) for ' + currentDownloadRow.id);
+    currentDownloadRow.files.forEach(function(f) {
+        var a = document.createElement('a');
+        a.href = f.url; a.download = f.name;
+        document.body.appendChild(a); a.click();
+        document.body.removeChild(a);
+    });
+}
+
+// ── Reply submit ──────────────────────────────────────────────────────────────
+function submitReply() {
+    var remark = document.getElementById('ContentPlaceHolder1_txtreplyremarks').value.trim();
+    if (!remark) { alert('Please enter a reply remark.'); return; }
+    simulatePostBack('ctl00$ContentPlaceHolder1$btnReply');
+    logActivity('[Reply] Submitted: ' + remark);
+    setTimeout(function() {
+        $('#modalRequestDetail').modal('hide');
+        document.getElementById('ContentPlaceHolder1_txtreplyremarks').value = '';
+    }, 800);
+}
+
+// ── Reset search ──────────────────────────────────────────────────────────────
+function resetSearch() {
+    document.getElementById('txt_Requestid').value = '';
+    document.getElementById('txt_ack_fir_no').value = '';
+    document.getElementById('ContentPlaceHolder1_ddlBank_search').value = '';
+    $('#ContentPlaceHolder1_ddlBank_search').trigger('chosen:updated');
+    document.getElementById('ContentPlaceHolder1_ddlStatus').value = '';
+    document.getElementById('ContentPlaceHolder1_txtATMID_search').value = '';
+    var today = new Date();
+    var prior = new Date(); prior.setDate(prior.getDate() - 30);
+    document.getElementById('txtfldToDate').value   = today.toISOString().split('T')[0];
+    document.getElementById('txtfldFromDate').value = prior.toISOString().split('T')[0];
+    document.getElementById('resultsBody').innerHTML =
+        '<tr><td colspan="13" style="text-align:center;color:#888;padding:30px;">' +
+        '<i class="fa fa-info-circle"></i> Use the search filters above and click <b>Search</b>.</td></tr>';
+    document.getElementById('shownCount').textContent = '0';
+    logActivity('[Reset] Search filters cleared');
+}
+</script>
+
+</body>
+</html>
