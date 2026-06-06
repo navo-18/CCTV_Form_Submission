@@ -345,7 +345,7 @@
                 <!-- Reporting From Date -->
                 <div class="fc3">
                     <div class="form-group">
-                        <label>Reporting From Date <span>*</span></label>
+                        <label>Reporting From Date</label>
                         <input type="date" name="ctl00$ContentPlaceHolder1$txtfldFromDate"
                                id="txtfldFromDate" class="form-control" autocomplete="off" />
                         <span id="span_fromdate_req" style="color:red;font-size:11px;display:none;">Please select From Date</span>
@@ -355,7 +355,7 @@
                 <div class="fc3" style="display:flex; align-items:flex-end; gap:8px; flex-wrap:wrap;">
                     <div style="flex:1; min-width:140px;">
                         <div class="form-group">
-                            <label>Reporting To Date <span>*</span></label>
+                            <label>Reporting To Date</label>
                             <input type="date" name="ctl00$ContentPlaceHolder1$txtfldToDate"
                                    id="txtfldToDate" class="form-control" autocomplete="off" />
                             <span id="span_todate_req" style="color:red;font-size:11px;display:none;">Please select To Date</span>
@@ -780,12 +780,9 @@ function logAct(msg) {
 }
 
 function handleSearch() {
+    // Dates are optional — no mandatory validation
     var fromDate = document.getElementById('txtfldFromDate').value;
     var toDate   = document.getElementById('txtfldToDate').value;
-    if (!fromDate) { document.getElementById('span_fromdate_req').style.display='block'; return; }
-    document.getElementById('span_fromdate_req').style.display = 'none';
-    if (!toDate)   { document.getElementById('span_todate_req').style.display='block';   return; }
-    document.getElementById('span_todate_req').style.display = 'none';
 
     var ov = document.getElementById('pbOverlay');
     ov.classList.add('on');
@@ -796,17 +793,40 @@ function handleSearch() {
         var reqId  = document.getElementById('txt_Requestid').value.trim().toUpperCase();
         var ack    = document.getElementById('txt_ack_fir_no').value.trim();
         var bank   = document.getElementById('ContentPlaceHolder1_ddlbank').value;
-        var action = document.getElementById('ContentPlaceHolder1_ddlaction').value;
+        var action = document.getElementById('ContentPlaceHolder1_ddlaction').value; // '0','1','2','3','5'
         var dist   = document.getElementById('ContentPlaceHolder1_drpdist').value;
         var ps     = document.getElementById('ContentPlaceHolder1_drppolice').value;
 
         currentData = sampleData.filter(function(r) {
-            if (reqId  && r.id.indexOf(reqId)           === -1) return false;
-            if (ack    && r.ack.indexOf(ack)            === -1) return false;
-            if (bank   && r.bank.indexOf(bank)          === -1) return false;
-            if (action && r.status !== action)                   return false;
-            if (dist   && r.state.indexOf(dist)         === -1) return false;
-            if (ps     && r.state.indexOf(ps)           === -1) return false;
+            // Request ID filter
+            if (reqId  && r.id.toUpperCase().indexOf(reqId) === -1) return false;
+            // Ack No filter
+            if (ack    && r.ack.indexOf(ack)                === -1) return false;
+            // Bank filter
+            if (bank   && r.bank.toLowerCase().indexOf(bank.toLowerCase()) === -1) return false;
+            // Action filter — match by action value ('1'=Compiled,'2'=Raised Query,'3'=Pending,'5'=Closed)
+            if (action && action !== '0' && r.action !== action) return false;
+            // District filter
+            if (dist   && r.state.toLowerCase().indexOf(dist.toLowerCase()) === -1) return false;
+            // Police Station filter
+            if (ps     && r.state.toLowerCase().indexOf(ps.toLowerCase())   === -1) return false;
+            // Date range filter — only apply if dates are provided
+            if (fromDate || toDate) {
+                // Parse reqon date (format: DD/MM/YYYY)
+                var reqonDate = r.reqon.split('\n')[0].trim(); // e.g. "02/05/2026"
+                var parts = reqonDate.split('/');
+                if (parts.length === 3) {
+                    var recDate = new Date(parts[2], parts[1]-1, parts[0]); // YYYY, MM-1, DD
+                    if (fromDate) {
+                        var from = new Date(fromDate);
+                        if (recDate < from) return false;
+                    }
+                    if (toDate) {
+                        var to = new Date(toDate);
+                        if (recDate > to) return false;
+                    }
+                }
+            }
             return true;
         });
 
