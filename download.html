@@ -419,149 +419,179 @@
 </div>
 
 
-<!-- Modal: View Reply (with download link) -->
-<div class="modal fade" id="modalViewReply" role="dialog">
-    <div class="modal-dialog" style="width:550px;">
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     MODAL 1: #exampleModalCenter — View Reply popup (triggered by btnpopup)
+     Matches actual site: shows bank reply with download link from bank
+═══════════════════════════════════════════════════════════════════════════ -->
+<div class="modal fade" id="exampleModalCenter" role="dialog">
+    <div class="modal-dialog modal-dialog-centered" role="document" style="width:900px;">
         <div class="modal-content">
-            <div class="modal-header" style="background:#337ab7; color:#fff;">
-                <button type="button" class="close" data-dismiss="modal" style="color:#fff;"><span>&times;</span></button>
-                <h5 class="modal-title">
-                    Reply Details — Request ID: <b><span id="vrReqId"></span></b>
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalCenterTitle">
+                    <span>Request Id : </span>
+                    <b><span id="ContentPlaceHolder1_lblreqid"></span></b>
                 </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
             </div>
             <div class="modal-body">
-                <!-- Request summary -->
-                <table class="table table-bordered" style="font-size:12px;">
-                    <tr><th width="140">Bank Name</th><td id="vrBank"></td></tr>
-                    <tr><th>ATM ID</th><td id="vrAtmId"></td></tr>
-                    <tr><th>Ack No</th><td id="vrAck"></td></tr>
-                    <tr><th>Current Status</th><td id="vrStatus"></td></tr>
-                    <tr><th>Remark</th><td id="vrRemark"></td></tr>
-                </table>
 
-                <!-- Download link section -->
-                <div style="background:#f0f7ff; border:1px solid #b8d4f0; border-radius:6px; padding:16px; margin-top:10px; text-align:center;">
-                    <div style="font-size:13px; color:#555; margin-bottom:10px;">
-                        <b>Bank has uploaded the CCTV footage.</b><br>
-                        Click the link below to download the footage from the bank's file sharing service.
-                    </div>
-                    <div style="margin-bottom:8px;">
-                        <a id="vrDownloadLink"
-                           href="#"
-                           target="_blank"
-                           style="display:inline-block; background:#5cb85c; color:#fff;
-                                  padding:10px 24px; border-radius:4px; font-size:14px;
-                                  font-weight:bold; text-decoration:none;">
-                            ⬇ Click Here to Download Footage
-                        </a>
-                    </div>
-                    <div style="font-size:11px; color:#888; margin-top:8px;">
-                        You will be redirected to the bank's file sharing platform (e.g. WeTransfer, Google Drive).
-                    </div>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default btn-sm" data-dismiss="modal">Close</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Modal: View Reply -->
-<div class="modal fade" id="modalReply" role="dialog">
-    <div class="modal-dialog" style="width:700px;">
-        <div class="modal-content">
-            <div class="modal-header modal-header-blue">
-                <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
-                <h5 class="modal-title">Request Details — ID: <b><span id="modalReqId"></span></b></h5>
-            </div>
-            <div class="modal-body">
-                <table class="table table-bordered detail-table">
-                    <tr><th>Bank Name</th><td id="d_bank"></td><th>ATM ID</th><td id="d_atmid"></td></tr>
-                    <tr><th>Address</th><td colspan="3" id="d_address"></td></tr>
-                    <tr><th>Date From</th><td id="d_datefrom"></td><th>Time From</th><td id="d_timefrom"></td></tr>
-                    <tr><th>Date To</th><td id="d_dateto"></td><th>Time To</th><td id="d_timeto"></td></tr>
-                    <tr><th>Ack No</th><td id="d_ack"></td><th>Camera</th><td id="d_camera"></td></tr>
-                    <tr><th>Status</th><td id="d_status"></td><th>Submitted</th><td id="d_submitted"></td></tr>
-                    <tr><th>Remark</th><td colspan="3" id="d_remark"></td></tr>
-                    <tr><th>Notice File</th><td colspan="3"><a id="d_filelink" href="#" target="_blank">View Notice</a></td></tr>
-                </table>
-                <div style="margin-top:12px;">
-                    <label style="font-weight:bold; font-size:12px;">Reply / Action Remark
-                        <small style="color:#888; font-weight:normal;">(Alphanumeric , . - ():/  max 250)</small>
-                    </label>
-                    <textarea name="ctl00$ContentPlaceHolder1$txtreplyremarks"
-                              id="ContentPlaceHolder1_txtreplyremarks"
-                              rows="3" maxlength="250" class="form-control"
-                              placeholder="Enter reply remark..."
-                              onKeyUp="textCounter(this,'replycount',250)"
-                              onChange="textCounter(this,'replycount',250)"></textarea>
-                    <small><input readonly type="text" id="replycount" value="250" class="req-counter" /> remaining</small>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-success btn-sm" onclick="submitReply()">Submit Reply</button>
-                <button type="button" class="btn btn-default btn-sm" data-dismiss="modal">Close</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Modal: Download -->
-<div class="modal fade" id="modalDownload" role="dialog">
-    <div class="modal-dialog" style="width:750px;">
-        <div class="modal-content">
-            <div class="modal-header modal-header-green">
-                <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
-                <h5 class="modal-title">Download CCTV Footage — Request ID: <b><span id="dlReqId"></span></b></h5>
-            </div>
-            <div class="modal-body">
-                <div style="background:#f9f9f9; padding:10px; border-radius:4px; margin-bottom:12px; font-size:12px;">
-                    <div class="row">
-                        <div class="col-sm-4"><b>Bank:</b> <span id="dl_bank"></span></div>
-                        <div class="col-sm-4"><b>ATM ID:</b> <span id="dl_atmid"></span></div>
-                        <div class="col-sm-4"><b>Ack No:</b> <span id="dl_ack"></span></div>
-                        <div class="col-sm-6"><b>From:</b> <span id="dl_from"></span></div>
-                        <div class="col-sm-6"><b>To:</b> <span id="dl_to"></span></div>
-                        <div class="col-sm-12"><b>Camera:</b> <span id="dl_camera"></span></div>
-                    </div>
-                </div>
-                <!-- Files table -->
-                <label style="font-weight:bold; font-size:12px;">Available Files</label>
-                <div style="overflow-x:auto;">
-                    <table class="table table-bordered" style="font-size:12px;" id="filesTable">
-                        <thead><tr style="background:#5cb85c; color:#fff;">
-                            <th>Sr.</th><th>File Name</th><th>Camera Type</th>
-                            <th>File Size</th><th>Uploaded On</th><th>Download</th>
-                        </tr></thead>
-                        <tbody id="filesBody">
-                            <tr><td colspan="6" style="text-align:center;color:#888;padding:20px;">No files uploaded yet.</td></tr>
-                        </tbody>
+                <!-- Request details table -->
+                <div class="table-responsive">
+                    <table class="table table-bordered" style="font-size:12px;">
+                        <tr>
+                            <th style="background:#f5f5f5; width:160px;">Bank Name</th>
+                            <td id="popup_bank"></td>
+                            <th style="background:#f5f5f5; width:160px;">ATM ID</th>
+                            <td id="popup_atmid"></td>
+                        </tr>
+                        <tr>
+                            <th style="background:#f5f5f5;">Address</th>
+                            <td colspan="3" id="popup_address"></td>
+                        </tr>
+                        <tr>
+                            <th style="background:#f5f5f5;">Date From</th>
+                            <td id="popup_datefrom"></td>
+                            <th style="background:#f5f5f5;">Time From</th>
+                            <td id="popup_timefrom"></td>
+                        </tr>
+                        <tr>
+                            <th style="background:#f5f5f5;">Date To</th>
+                            <td id="popup_dateto"></td>
+                            <th style="background:#f5f5f5;">Time To</th>
+                            <td id="popup_timeto"></td>
+                        </tr>
+                        <tr>
+                            <th style="background:#f5f5f5;">Ack No</th>
+                            <td id="popup_ack"></td>
+                            <th style="background:#f5f5f5;">Camera Footage</th>
+                            <td id="popup_camera"></td>
+                        </tr>
+                        <tr>
+                            <th style="background:#f5f5f5;">Current Status</th>
+                            <td id="popup_status"></td>
+                            <th style="background:#f5f5f5;">Requested On</th>
+                            <td id="popup_reqon"></td>
+                        </tr>
+                        <tr>
+                            <th style="background:#f5f5f5;">Remark</th>
+                            <td colspan="3" id="popup_remark"></td>
+                        </tr>
                     </table>
                 </div>
-                <!-- Suspect detail -->
-                <div style="margin-top:10px;">
-                    <label style="font-weight:bold; font-size:12px;">Suspect Detail Remark</label>
-                    <textarea name="ctl00$ContentPlaceHolder1$txt_susptremarks"
-                              id="ContentPlaceHolder1_txt_susptremarks"
-                              rows="2" maxlength="250" class="form-control"
-                              placeholder="(Alphanumeric , . - () ! Max 250)"
-                              onKeyUp="textCounter(this,'suspcount',250)"
-                              onChange="textCounter(this,'suspcount',250)"></textarea>
-                    <small><input readonly type="text" id="suspcount" value="250" class="req-counter" /> remaining</small>
+
+                <!-- Reply / Download link section -->
+                <div class="col-lg-12" style="margin-top:15px;">
+                    <label><b>Bank Reply / Download Link</b></label>
+                    <div style="background:#f0f7ff; border:1px solid #b8d4f0; border-radius:6px; padding:16px; margin-top:6px; text-align:center;">
+                        <div style="font-size:13px; color:#555; margin-bottom:12px;">
+                            The bank has uploaded the CCTV footage. Click the link below to download.
+                        </div>
+                        <a id="ContentPlaceHolder1_lnkdownload"
+                           href="#" target="_blank"
+                           style="display:inline-block; background:#5cb85c; color:#fff;
+                                  padding:10px 28px; border-radius:4px; font-size:14px;
+                                  font-weight:bold; text-decoration:none;">
+                            &#11015; Click Here to Download Footage
+                        </a>
+                        <div style="font-size:11px; color:#888; margin-top:10px;">
+                            You will be redirected to the bank's file sharing platform (WeTransfer / Google Drive etc.)
+                        </div>
+                    </div>
                 </div>
+
+                <!-- Reply remarks (readonly - matches actual site) -->
+                <div class="col-lg-12" style="margin-top:15px;">
+                    <label>Reply Remarks</label>
+                    <small style="color:#888;">(Only Alphanumeric , . - ():/  are allowed. Max 250 characters)</small>
+                    <textarea name="ctl00$ContentPlaceHolder1$txtreplyremarks"
+                              id="ContentPlaceHolder1_txtreplyremarks"
+                              rows="2" cols="20" maxlength="250"
+                              class="form-control"
+                              readonly="readonly"
+                              placeholder="Bank reply remarks will appear here..."></textarea>
+                </div>
+
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-success btn-sm" onclick="downloadAll()">Download All Files</button>
-                <button type="button" class="btn btn-default btn-sm" data-dismiss="modal">Close</button>
+            <div class="modal-footer" style="border-top:none;">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal" style="margin-top:15px;">Close</button>
             </div>
         </div>
     </div>
 </div>
 
-<!-- Hidden trigger buttons matching actual ASP.NET site -->
-<button type="button" id="btnpopup"         style="display:none" data-toggle="modal" data-target="#modalReply"></button>
-<button type="button" id="btnsuspectpopup"  style="display:none" data-toggle="modal" data-target="#modalDownload"></button>
+<!-- btnpopup: hidden trigger for #exampleModalCenter (matching actual site) -->
+<button type="button" id="btnpopup" class="btn btn-primary"
+        data-toggle="modal" style="display:none"
+        data-target="#exampleModalCenter"></button>
+
+
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     MODAL 2: #divsuspectdetail — Suspect Detail popup (triggered by btnsuspectpopup)
+     Matches actual site exactly
+═══════════════════════════════════════════════════════════════════════════ -->
+<div class="modal fade" id="divsuspectdetail" role="dialog">
+    <div class="modal-dialog modal-dialog-centered" role="document" style="width:900px;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="divsuspectdetailTitle">
+                    <span>Request Id : </span>
+                    <b><span id="ContentPlaceHolder1_lblsuspectreqid"></span></b>
+                </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <label>Suspect Detail</label>
+                <div class="col-lg-12" style="margin-top:10px; height:300px; overflow-y:auto;">
+                    <div id="suspectDetailContent">
+                        <table class="table table-bordered" style="font-size:12px;" id="suspectDetailTable">
+                            <thead>
+                                <tr style="background:#337ab7; color:#fff;">
+                                    <th>Sr.</th>
+                                    <th>Suspect Name</th>
+                                    <th>Description</th>
+                                    <th>Time Seen</th>
+                                    <th>Camera</th>
+                                </tr>
+                            </thead>
+                            <tbody id="suspectDetailBody">
+                                <tr>
+                                    <td colspan="5" style="text-align:center; color:#888; padding:20px;">
+                                        No suspect details available.
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="col-lg-12" style="margin-top:10px;">
+                    <label>Remark</label>
+                    (Only Alphanumeric , . - ():/  are allowed. Max length should not be greater than 250 Characters)
+                    <textarea name="ctl00$ContentPlaceHolder1$txt_susptremarks"
+                              rows="2" cols="20" maxlength="250"
+                              id="ContentPlaceHolder1_txt_susptremarks"
+                              disabled="disabled"
+                              class="aspNetDisabled form-control"
+                              placeholder="(Only Alphanumeric , . - () ! are allowed. Max length should not be greater than 250)"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer" style="border-top:none;">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal" style="margin-top:15px;">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- btnsuspectpopup: hidden trigger for #divsuspectdetail (matching actual site) -->
+<button type="button" id="btnsuspectpopup" class="btn btn-primary"
+        data-toggle="modal" style="display:none"
+        data-target="#divsuspectdetail"></button>
+
+<!-- btnreply and btnraisedhistory matching actual site -->
 <button type="button" id="btnreply"         style="display:none"></button>
 <button type="button" id="btnraisedhistory" style="display:none"></button>
 
@@ -886,16 +916,23 @@ function renderTable(data) {
 
 function openViewReply(idx) {
     var r = currentData[idx];
-    document.getElementById('vrReqId').textContent    = r.id;
-    document.getElementById('vrBank').textContent     = r.bank;
-    document.getElementById('vrAtmId').textContent    = r.atmid;
-    document.getElementById('vrAck').textContent      = r.ack;
-    document.getElementById('vrStatus').textContent   = r.status;
-    document.getElementById('vrRemark').textContent   = r.remark;
-    document.getElementById('vrDownloadLink').href    = r.replyLink || '#';
-    document.getElementById('vrDownloadLink').textContent = r.replyLink || 'No link available';
-    logAct('[View Reply] Opened for ' + r.id + ' → ' + r.replyLink);
-    $('#modalViewReply').modal('show');
+    document.getElementById('ContentPlaceHolder1_lblreqid').textContent  = r.id;
+    document.getElementById('popup_bank').textContent      = r.bank;
+    document.getElementById('popup_atmid').textContent     = r.atmid;
+    document.getElementById('popup_address').textContent   = r.address;
+    document.getElementById('popup_datefrom').textContent  = r.datefrom;
+    document.getElementById('popup_timefrom').textContent  = r.timefrom;
+    document.getElementById('popup_dateto').textContent    = r.dateto;
+    document.getElementById('popup_timeto').textContent    = r.timeto;
+    document.getElementById('popup_ack').textContent       = r.ack;
+    document.getElementById('popup_camera').textContent    = r.camera;
+    document.getElementById('popup_status').textContent    = r.status;
+    document.getElementById('popup_reqon').textContent     = r.reqon.replace('\n', ' ');
+    document.getElementById('popup_remark').textContent    = r.remark;
+    document.getElementById('ContentPlaceHolder1_lnkdownload').href  = r.replyLink || '#';
+    document.getElementById('ContentPlaceHolder1_txtreplyremarks').value = r.replyRemark || '';
+    logAct('[View Reply] Opened: ' + r.id + ' link: ' + r.replyLink);
+    $('#exampleModalCenter').modal('show');
 }
 
 function openReply(idx) {
@@ -921,35 +958,19 @@ function openReply(idx) {
 function openDownload(idx) {
     var r = currentData[idx];
     currentDlRow = r;
-    document.getElementById('dlReqId').textContent  = r.id;
-    document.getElementById('dl_bank').textContent  = r.bank;
-    document.getElementById('dl_atmid').textContent = r.atmid;
-    document.getElementById('dl_ack').textContent   = r.ack;
-    document.getElementById('dl_from').textContent  = r.datefrom + ' ' + r.timefrom;
-    document.getElementById('dl_to').textContent    = r.dateto   + ' ' + r.timeto;
-    document.getElementById('dl_camera').textContent= r.camera;
-
-    var fb = document.getElementById('filesBody');
+    document.getElementById('ContentPlaceHolder1_lblsuspectreqid').textContent = r.id;
+    var sb = document.getElementById('suspectDetailBody');
     if (r.files && r.files.length > 0) {
-        var fh = '';
+        var sh = '';
         r.files.forEach(function(f, fi) {
-            fh += '<tr>' +
-                '<td>' + (fi+1) + '</td>' +
-                '<td>' + f.name + '</td>' +
-                '<td>' + f.camera + '</td>' +
-                '<td>' + f.size + '</td>' +
-                '<td>' + f.uploaded + '</td>' +
-                '<td><a href="' + f.url + '" class="btn btn-success btn-xs" download>' +
-                    'Download</a></td>' +
-            '</tr>';
+            sh += '<tr><td>' + (fi+1) + '</td><td>—</td><td>' + f.name + ' (' + f.size + ')</td><td>' + r.timefrom + '</td><td>' + f.camera + '</td></tr>';
         });
-        fb.innerHTML = fh;
+        sb.innerHTML = sh;
     } else {
-        fb.innerHTML = '<tr><td colspan="6" style="text-align:center;color:#888;padding:15px;">No files uploaded yet by the bank.</td></tr>';
+        sb.innerHTML = '<tr><td colspan="5" style="text-align:center;color:#888;padding:20px;">No files uploaded yet.</td></tr>';
     }
-
-    logAct('[Download] Opened for ' + r.id);
-    $('#modalDownload').modal('show');
+    logAct('[Download] Opened suspect detail for ' + r.id);
+    $('#divsuspectdetail').modal('show');
 }
 
 function downloadAll() {
