@@ -586,69 +586,193 @@ $(document).ready(function() {
     document.getElementById('txtfldFromDate').value = prior.toISOString().split('T')[0];
 });
 
-// Sample data matching actual site structure
+// Sample data — full test dataset covering all action states
 var sampleData = [
     {
-        id: 'RJBA06260002581',
-        state: 'RAJASTHAN / CHURU/ CYBER POLICE STATION',
+        id: 'RJBA06260001001',
+        state: 'RAJASTHAN / AJMER / CYBER POLICE STATION',
+        bank: 'State Bank of India',
+        atmid: 'SBI05234',
+        atmplace: 'Main Market, Near Clock Tower, Ajmer, Rajasthan - 305001',
+        ack: '12345678901234',
+        datefrom: '01/05/2026', timefrom: '10:00 AM',
+        dateto:   '01/05/2026', timeto:   '11:00 AM',
+        camera: 'Pinhole Camera, ATM Room Camera',
+        remark: 'Fraud case - suspect withdrew cash using cloned card',
+        reqby: 'CYBER POLICE STATION
+(po_cyberajmer)',
+        reqon: '02/05/2026
+11:30 AM',
+        status: 'Compiled',       // action value = 1
+        action: '1',
+        address: 'Main Market, Near Clock Tower, Ajmer, Rajasthan - 305001',
+        fileurl: 'https://wetransfer.com/downloads/test-footage-001',
+        replyLink: 'https://wetransfer.com/downloads/test-footage-001',
+        files: [
+            { name: 'Pinhole_SBI05234_01052026.mp4', camera: 'Pinhole Camera',   size: '245 MB', uploaded: '05/05/2026', url: 'https://wetransfer.com/downloads/test-footage-001' },
+            { name: 'ATMRoom_SBI05234_01052026.mp4', camera: 'ATM Room Camera', size: '312 MB', uploaded: '05/05/2026', url: 'https://wetransfer.com/downloads/test-footage-001' }
+        ]
+    },
+    {
+        id: 'RJBA06260002002',
+        state: 'RAJASTHAN / JAIPUR / KOTWALI',
+        bank: 'HDFC Bank',
+        atmid: 'HDFC00912',
+        atmplace: 'Station Road, Near Railway Station, Jaipur, Rajasthan - 302001',
+        ack: '98765432109876',
+        datefrom: '05/05/2026', timefrom: '02:30 PM',
+        dateto:   '05/05/2026', timeto:   '03:30 PM',
+        camera: 'ATM Room Camera',
+        remark: 'Robbery at ATM - suspect stole cash from another customer',
+        reqby: 'KOTWALI PS
+(po_kotwalijijaipur)',
+        reqon: '06/05/2026
+09:15 AM',
+        status: 'Compiled',
+        action: '1',
+        address: 'Station Road, Near Railway Station, Jaipur, Rajasthan - 302001',
+        fileurl: 'https://drive.google.com/test-footage-002',
+        replyLink: 'https://drive.google.com/test-footage-002',
+        files: [
+            { name: 'ATMRoom_HDFC00912_05052026.mp4', camera: 'ATM Room Camera', size: '198 MB', uploaded: '08/05/2026', url: 'https://drive.google.com/test-footage-002' }
+        ]
+    },
+    {
+        id: 'RJBA06260003003',
+        state: 'RAJASTHAN / JODHPUR / SADAR BAZAR',
         bank: 'Bank of Maharashtra',
         atmid: 'HZ2408H1',
-        atmplace: 'SCO-28 AERO BLOCK, AEROCITY MOHALISCO, MOHALI 140306',
+        atmplace: 'SCO-28 AERO BLOCK, AEROCITY MOHALI, 140306',
         ack: '32705260050717',
         datefrom: '13/05/2026', timefrom: '02:00 PM',
         dateto:   '13/05/2026', timeto:   '02:27 PM',
         camera: 'Pinhole Camera, ATM Room Camera',
         remark: 'The footage of the ATM room has been received but the footage of the pin hole camera has not been received yet. PLS PROVIDE PIN HOLE CAMERA FOOTAGE',
-        reqby: 'CYBER POLICE STATION\n(po_cyberchuru)',
-        reqon: '02/06/2026\n04:06 PM',
-        status: 'Processing',
-        replyLink: 'https://wetransfer.com/downloads/sample-link-1',
-        address: 'SCO-28 AERO BLOCK-G AEROCITY MOHALISCO-26 AERO BLOCK-G AEROCITY MOHALI SAHIBZADA 140306',
-        fileurl: '#',
-        files: [
-            { name: 'ATMRoom_HZ2408H1_13052026.mp4', camera: 'ATM Room Camera', size: '312 MB', uploaded: '01/06/2026', url: '#' }
-        ]
-    },
-    {
-        id: 'RJBA06260003102',
-        state: 'RAJASTHAN / AJMER / CYBER POLICE STATION',
-        bank: 'State Bank of India',
-        atmid: 'SBI05234',
-        atmplace: 'Main Market, Ajmer, Rajasthan - 305001',
-        ack: '12345678901234',
-        datefrom: '05/05/2026', timefrom: '10:00 AM',
-        dateto:   '05/05/2026', timeto:   '11:00 AM',
-        camera: 'Pinhole Camera',
-        remark: 'Footage required for investigation',
-        reqby: 'CYBER POLICE STATION\n(po_cyberajmer)',
-        reqon: '01/06/2026\n10:30 AM',
-        status: 'Approved',
-        replyLink: 'https://wetransfer.com/downloads/sample-link-2',
-        address: 'Main Market, Near Clock Tower, Ajmer, Rajasthan - 305001',
-        fileurl: '#',
-        files: [
-            { name: 'Pinhole_SBI05234_05052026.mp4', camera: 'Pinhole Camera', size: '245 MB', uploaded: '03/06/2026', url: '#' },
-            { name: 'ATMRoom_SBI05234_05052026.mp4', camera: 'ATM Room Camera', size: '198 MB', uploaded: '03/06/2026', url: '#' }
-        ]
-    },
-    {
-        id: 'RJBA06260004788',
-        state: 'RAJASTHAN / JAIPUR / SADAR BAZAR',
-        bank: 'HDFC Bank',
-        atmid: 'HDFC00912',
-        atmplace: 'Station Road, Jaipur, Rajasthan - 302001',
-        ack: '98765432109876',
-        datefrom: '28/04/2026', timefrom: '08:30 AM',
-        dateto:   '28/04/2026', timeto:   '09:30 AM',
-        camera: 'ATM Room Camera',
-        remark: 'Urgent - fraud case',
-        reqby: 'SADAR BAZAR PS\n(po_sadarbazar)',
-        reqon: '30/05/2026\n03:15 PM',
-        status: 'Pending',
+        reqby: 'SADAR BAZAR PS
+(po_sadarbazarjdh)',
+        reqon: '02/06/2026
+04:06 PM',
+        status: 'Raised Query',
+        action: '2',
+        address: 'SCO-28 AERO BLOCK-G AEROCITY MOHALISCO-26, MOHALI SAHIBZADA 140306',
+        fileurl: null,
         replyLink: null,
-        address: 'Station Road, Near Railway Station, Jaipur - 302001',
-        fileurl: '#',
         files: []
+    },
+    {
+        id: 'RJBA06260004004',
+        state: 'RAJASTHAN / BIKANER / CYBER POLICE STATION',
+        bank: 'Punjab National Bank',
+        atmid: 'PNB22341',
+        atmplace: 'Civil Lines, Bikaner, Rajasthan - 334001',
+        ack: '55667788990011',
+        datefrom: '10/05/2026', timefrom: '11:00 AM',
+        dateto:   '10/05/2026', timeto:   '12:00 PM',
+        camera: 'Pinhole Camera',
+        remark: 'Card skimming device found - need footage for suspect identification',
+        reqby: 'CYBER POLICE STATION
+(po_cyberbikaner)',
+        reqon: '11/05/2026
+02:30 PM',
+        status: 'Pending',
+        action: '3',
+        address: 'Civil Lines, Near Collectorate, Bikaner, Rajasthan - 334001',
+        fileurl: null,
+        replyLink: null,
+        files: []
+    },
+    {
+        id: 'RJBA06260005005',
+        state: 'RAJASTHAN / KOTA / CIVIL LINES',
+        bank: 'ICICI Bank',
+        atmid: 'ICICI12567',
+        atmplace: 'DC Colony, Near Bus Stand, Kota, Rajasthan - 324001',
+        ack: '11223344556677',
+        datefrom: '08/05/2026', timefrom: '08:00 AM',
+        dateto:   '08/05/2026', timeto:   '09:00 AM',
+        camera: 'Pinhole Camera',
+        remark: 'Cyber fraud - OTP based transaction',
+        reqby: 'CIVIL LINES PS
+(po_civillineskota)',
+        reqon: '09/05/2026
+10:00 AM',
+        status: 'Closed',
+        action: '5',
+        address: 'DC Colony, Near Bus Stand, Kota, Rajasthan - 324001',
+        fileurl: null,
+        replyLink: null,
+        files: []
+    },
+    {
+        id: 'RJBA06260006006',
+        state: 'RAJASTHAN / CHURU / CYBER POLICE STATION',
+        bank: 'Canara Bank',
+        atmid: 'CANARA00456',
+        atmplace: 'Station Road, Churu, Rajasthan - 331001',
+        ack: '77889900112233',
+        datefrom: '15/05/2026', timefrom: '04:00 PM',
+        dateto:   '15/05/2026', timeto:   '05:00 PM',
+        camera: 'ATM Room Camera',
+        remark: 'ATM vandalism - need footage for FIR',
+        reqby: 'CYBER POLICE STATION
+(po_cyberchuru)',
+        reqon: '16/05/2026
+09:00 AM',
+        status: 'Compiled',
+        action: '1',
+        address: 'Station Road, Near Railway Station, Churu, Rajasthan - 331001',
+        fileurl: 'https://wetransfer.com/downloads/test-footage-006',
+        replyLink: 'https://wetransfer.com/downloads/test-footage-006',
+        files: [
+            { name: 'ATMRoom_CANARA00456_15052026.mp4', camera: 'ATM Room Camera', size: '275 MB', uploaded: '18/05/2026', url: 'https://wetransfer.com/downloads/test-footage-006' }
+        ]
+    },
+    {
+        id: 'RJBA06260007007',
+        state: 'RAJASTHAN / ALWAR / MAIN POLICE STATION',
+        bank: 'Axis Bank',
+        atmid: 'AXIS00789',
+        atmplace: 'MG Road, Alwar, Rajasthan - 301001',
+        ack: '44556677889900',
+        datefrom: '20/05/2026', timefrom: '06:30 PM',
+        dateto:   '20/05/2026', timeto:   '07:00 PM',
+        camera: 'Pinhole Camera, ATM Room Camera',
+        remark: 'Multiple unauthorized transactions from cloned card',
+        reqby: 'MAIN PS ALWAR
+(po_mainalwar)',
+        reqon: '21/05/2026
+11:45 AM',
+        status: 'Pending',
+        action: '3',
+        address: 'MG Road, Near City Palace, Alwar, Rajasthan - 301001',
+        fileurl: null,
+        replyLink: null,
+        files: []
+    },
+    {
+        id: 'RJBA06260008008',
+        state: 'RAJASTHAN / SIKAR / KOTWALI',
+        bank: 'Union Bank of India',
+        atmid: 'UBI00321',
+        atmplace: 'Subhash Nagar, Sikar, Rajasthan - 332001',
+        ack: '33445566778899',
+        datefrom: '22/05/2026', timefrom: '01:00 PM',
+        dateto:   '22/05/2026', timeto:   '02:00 PM',
+        camera: 'Pinhole Camera',
+        remark: 'Suspect used stolen debit card at ATM',
+        reqby: 'KOTWALI PS SIKAR
+(po_kotwalisikar)',
+        reqon: '23/05/2026
+03:20 PM',
+        status: 'Compiled',
+        action: '1',
+        address: 'Subhash Nagar, Near Collectorate, Sikar, Rajasthan - 332001',
+        fileurl: 'https://wetransfer.com/downloads/test-footage-008',
+        replyLink: 'https://wetransfer.com/downloads/test-footage-008',
+        files: [
+            { name: 'Pinhole_UBI00321_22052026.mp4',  camera: 'Pinhole Camera',   size: '189 MB', uploaded: '25/05/2026', url: 'https://wetransfer.com/downloads/test-footage-008' },
+            { name: 'ATMRoom_UBI00321_22052026.mp4',  camera: 'ATM Room Camera',  size: '220 MB', uploaded: '25/05/2026', url: 'https://wetransfer.com/downloads/test-footage-008' }
+        ]
     }
 ];
 
@@ -720,18 +844,22 @@ function renderTable(data) {
                       r.status === 'Pending'  ? 'st-pending'  :
                       r.status === 'Rejected' ? 'st-rejected' : 'st-processing';
 
-        // Current Status cell: show status badge + "View Reply" hyperlink if reply exists
+        // Only Compiled (action=1) records have active buttons
+        var isCompiled = r.action === '1';
+
+        // Current Status cell: show status badge + "View Reply" only for Compiled
         var statusCell = '<span class="' + stClass + '">' + r.status + '</span>';
-        if (r.replyLink) {
-            statusCell += '<br><a href="#" class="view-reply-link" onclick="openViewReply(' + i + '); return false;" style="color:#337ab7; font-size:12px; font-weight:bold; text-decoration:underline; display:inline-block; margin-top:4px;">View Reply</a>';
+        if (isCompiled && r.replyLink) {
+            statusCell += '<br><a href="#" onclick="openViewReply(' + i + '); return false;" ' +
+                'style="color:#337ab7; font-size:12px; font-weight:bold; text-decoration:underline; display:inline-block; margin-top:4px;">View Reply</a>';
         }
 
-        // Reply column: Download/Suspect/Photograph buttons
-        var dlBtn = r.status === 'Approved'
-            ? '<button class="btn-xs btn-dl" onclick="openDownload(' + i + ')">Download</button> ' +
-              '<button class="btn-xs btn-suspect" onclick="openDownload(' + i + ')">Suspect</button> ' +
-              '<button class="btn-xs btn-photo" onclick="openDownload(' + i + ')">Photograph</button>'
-            : '';
+        // Reply column: active only for Compiled records
+        var dlBtn = isCompiled
+            ? '<button class="btn-xs btn-dl"      onclick="openDownload(' + i + ')">Download</button><br>' +
+              '<button class="btn-xs btn-suspect"  onclick="openDownload(' + i + ')" style="margin-top:2px;">Suspect</button><br>' +
+              '<button class="btn-xs btn-photo"    onclick="openDownload(' + i + ')" style="margin-top:2px;">Photograph</button>'
+            : '<span style="color:#aaa; font-size:11px;">—</span>';
 
         html += '<tr>' +
             '<td>' + (i+1) + '</td>' +
