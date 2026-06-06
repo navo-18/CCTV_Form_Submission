@@ -258,8 +258,8 @@
                 <div class="fc3">
                     <div class="form-group">
                         <label>Bank Name</label>
-                        <select name="ctl00$ContentPlaceHolder1$ddlBank_search"
-                                id="ContentPlaceHolder1_ddlBank_search"
+                        <select name="ctl00$ContentPlaceHolder1$ddlBank"
+                                id="ContentPlaceHolder1_ddlbank"
                                 class="form-control chzn-select">
                             <option value="">--Select BANK--</option>
                             <option value="SBI">State Bank of India</option>
@@ -295,13 +295,13 @@
                 <div class="fc3">
                     <div class="form-group">
                         <label>Action</label>
-                        <select name="ctl00$ContentPlaceHolder1$ddlAction"
-                                id="ContentPlaceHolder1_ddlAction" class="form-control">
-                            <option value="">Select Action</option>
-                            <option value="Pending">Pending</option>
-                            <option value="Processing">Processing</option>
-                            <option value="Approved">Approved</option>
-                            <option value="Rejected">Rejected</option>
+                        <select name="ctl00$ContentPlaceHolder1$ddlaction"
+                                id="ContentPlaceHolder1_ddlaction" class="form-control">
+                            <option value="0">Select Action</option>
+                            <option value="1">Compiled</option>
+                            <option value="2">Raised Query</option>
+                            <option value="3">Pending</option>
+                            <option value="5">Closed</option>
                         </select>
                     </div>
                 </div>
@@ -311,8 +311,8 @@
                 <div class="fc3">
                     <div class="form-group">
                         <label>District</label>
-                        <select name="ctl00$ContentPlaceHolder1$ddlDistrict"
-                                id="ContentPlaceHolder1_ddlDistrict"
+                        <select name="ctl00$ContentPlaceHolder1$drpdist"
+                                id="ContentPlaceHolder1_drpdist"
                                 class="form-control chzn-select">
                             <option value="">--Select District--</option>
                             <option value="AJMER">Ajmer</option>
@@ -332,8 +332,8 @@
                 <div class="fc3">
                     <div class="form-group">
                         <label>Police Station</label>
-                        <select name="ctl00$ContentPlaceHolder1$ddlPoliceStation"
-                                id="ContentPlaceHolder1_ddlPoliceStation"
+                        <select name="ctl00$ContentPlaceHolder1$drppolice"
+                                id="ContentPlaceHolder1_drppolice"
                                 class="form-control chzn-select">
                             <option value="">--select police--</option>
                             <option value="CYBER">Cyber Police Station</option>
@@ -638,10 +638,10 @@ function handleSearch() {
         ov.classList.remove('on');
         var reqId  = document.getElementById('txt_Requestid').value.trim().toUpperCase();
         var ack    = document.getElementById('txt_ack_fir_no').value.trim();
-        var bank   = document.getElementById('ContentPlaceHolder1_ddlBank_search').value;
-        var action = document.getElementById('ContentPlaceHolder1_ddlAction').value;
-        var dist   = document.getElementById('ContentPlaceHolder1_ddlDistrict').value;
-        var ps     = document.getElementById('ContentPlaceHolder1_ddlPoliceStation').value;
+        var bank   = document.getElementById('ContentPlaceHolder1_ddlbank').value;
+        var action = document.getElementById('ContentPlaceHolder1_ddlaction').value;
+        var dist   = document.getElementById('ContentPlaceHolder1_drpdist').value;
+        var ps     = document.getElementById('ContentPlaceHolder1_drppolice').value;
 
         currentData = sampleData.filter(function(r) {
             if (reqId  && r.id.indexOf(reqId)           === -1) return false;
@@ -778,10 +778,10 @@ function submitReply() {
 function resetSearch() {
     document.getElementById('txt_Requestid').value = '';
     document.getElementById('txt_ack_fir_no').value = '';
-    document.getElementById('ContentPlaceHolder1_ddlBank_search').value = '';
-    document.getElementById('ContentPlaceHolder1_ddlAction').value = '';
-    document.getElementById('ContentPlaceHolder1_ddlDistrict').value = '';
-    document.getElementById('ContentPlaceHolder1_ddlPoliceStation').value = '';
+    document.getElementById('ContentPlaceHolder1_ddlbank').value = '';
+    document.getElementById('ContentPlaceHolder1_ddlaction').value = '';
+    document.getElementById('ContentPlaceHolder1_drpdist').value = '';
+    document.getElementById('ContentPlaceHolder1_drppolice').value = '';
     $('.chzn-select').trigger('chosen:updated');
     var today = new Date(), prior = new Date();
     prior.setDate(prior.getDate() - 30);
