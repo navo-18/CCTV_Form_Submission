@@ -118,8 +118,6 @@
 
         .btn-search { background:#5cb85c; color:#fff; border:none; padding:6px 18px; border-radius:4px; cursor:pointer; font-size:13px; font-weight:bold; }
         .btn-search:hover { background:#449d44; }
-        .btn-reset { background:#f0ad4e; color:#fff; border:none; padding:6px 14px; border-radius:4px; cursor:pointer; font-size:13px; margin-left:6px; }
-        .btn-reset:hover { background:#ec971f; }
 
         /* Table */
         .table-wrap { overflow-x:auto; }
@@ -369,7 +367,6 @@
                                id="ContentPlaceHolder1_btnSearch" value="Search"
                                onclick="javascript:WebForm_DoPostBackWithOptions(new WebForm_PostBackOptions('ctl00$ContentPlaceHolder1$btnSearch','',true,'','',false,false))"
                                class="btn-search" />
-                        <button type="button" onclick="resetSearch()" class="btn-reset">Reset</button>
                     </div>
                 </div>
             </div>
@@ -418,6 +415,55 @@
     <div style="margin-top:6px;">
         <span style="font-size:12px; font-weight:bold; color:#555;">🔍 PostBack Activity Log</span>
         <div id="actLog">Ready...<br></div>
+    </div>
+</div>
+
+
+<!-- Modal: View Reply (with download link) -->
+<div class="modal fade" id="modalViewReply" role="dialog">
+    <div class="modal-dialog" style="width:550px;">
+        <div class="modal-content">
+            <div class="modal-header" style="background:#337ab7; color:#fff;">
+                <button type="button" class="close" data-dismiss="modal" style="color:#fff;"><span>&times;</span></button>
+                <h5 class="modal-title">
+                    Reply Details — Request ID: <b><span id="vrReqId"></span></b>
+                </h5>
+            </div>
+            <div class="modal-body">
+                <!-- Request summary -->
+                <table class="table table-bordered" style="font-size:12px;">
+                    <tr><th width="140">Bank Name</th><td id="vrBank"></td></tr>
+                    <tr><th>ATM ID</th><td id="vrAtmId"></td></tr>
+                    <tr><th>Ack No</th><td id="vrAck"></td></tr>
+                    <tr><th>Current Status</th><td id="vrStatus"></td></tr>
+                    <tr><th>Remark</th><td id="vrRemark"></td></tr>
+                </table>
+
+                <!-- Download link section -->
+                <div style="background:#f0f7ff; border:1px solid #b8d4f0; border-radius:6px; padding:16px; margin-top:10px; text-align:center;">
+                    <div style="font-size:13px; color:#555; margin-bottom:10px;">
+                        <b>Bank has uploaded the CCTV footage.</b><br>
+                        Click the link below to download the footage from the bank's file sharing service.
+                    </div>
+                    <div style="margin-bottom:8px;">
+                        <a id="vrDownloadLink"
+                           href="#"
+                           target="_blank"
+                           style="display:inline-block; background:#5cb85c; color:#fff;
+                                  padding:10px 24px; border-radius:4px; font-size:14px;
+                                  font-weight:bold; text-decoration:none;">
+                            ⬇ Click Here to Download Footage
+                        </a>
+                    </div>
+                    <div style="font-size:11px; color:#888; margin-top:8px;">
+                        You will be redirected to the bank's file sharing platform (e.g. WeTransfer, Google Drive).
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default btn-sm" data-dismiss="modal">Close</button>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -556,6 +602,7 @@ var sampleData = [
         reqby: 'CYBER POLICE STATION\n(po_cyberchuru)',
         reqon: '02/06/2026\n04:06 PM',
         status: 'Processing',
+        replyLink: 'https://wetransfer.com/downloads/sample-link-1',
         address: 'SCO-28 AERO BLOCK-G AEROCITY MOHALISCO-26 AERO BLOCK-G AEROCITY MOHALI SAHIBZADA 140306',
         fileurl: '#',
         files: [
@@ -576,6 +623,7 @@ var sampleData = [
         reqby: 'CYBER POLICE STATION\n(po_cyberajmer)',
         reqon: '01/06/2026\n10:30 AM',
         status: 'Approved',
+        replyLink: 'https://wetransfer.com/downloads/sample-link-2',
         address: 'Main Market, Near Clock Tower, Ajmer, Rajasthan - 305001',
         fileurl: '#',
         files: [
@@ -597,6 +645,7 @@ var sampleData = [
         reqby: 'SADAR BAZAR PS\n(po_sadarbazar)',
         reqon: '30/05/2026\n03:15 PM',
         status: 'Pending',
+        replyLink: null,
         address: 'Station Road, Near Railway Station, Jaipur - 302001',
         fileurl: '#',
         files: []
@@ -671,9 +720,18 @@ function renderTable(data) {
                       r.status === 'Pending'  ? 'st-pending'  :
                       r.status === 'Rejected' ? 'st-rejected' : 'st-processing';
 
+        // Current Status cell: show status badge + "View Reply" hyperlink if reply exists
+        var statusCell = '<span class="' + stClass + '">' + r.status + '</span>';
+        if (r.replyLink) {
+            statusCell += '<br><a href="#" class="view-reply-link" onclick="openViewReply(' + i + '); return false;" style="color:#337ab7; font-size:12px; font-weight:bold; text-decoration:underline; display:inline-block; margin-top:4px;">View Reply</a>';
+        }
+
+        // Reply column: Download/Suspect/Photograph buttons
         var dlBtn = r.status === 'Approved'
-            ? '<button class="btn-xs btn-dl" onclick="openDownload(' + i + ')">Download<br>Suspect<br>Photograph</button>'
-            : '<button class="btn-xs" style="background:#aaa;color:#fff;" disabled>Not Ready</button>';
+            ? '<button class="btn-xs btn-dl" onclick="openDownload(' + i + ')">Download</button> ' +
+              '<button class="btn-xs btn-suspect" onclick="openDownload(' + i + ')">Suspect</button> ' +
+              '<button class="btn-xs btn-photo" onclick="openDownload(' + i + ')">Photograph</button>'
+            : '';
 
         html += '<tr>' +
             '<td>' + (i+1) + '</td>' +
@@ -682,19 +740,30 @@ function renderTable(data) {
             '<td>' + r.bank + '</td>' +
             '<td>' + r.atmid + '<br><small style="color:#666;">' + r.atmplace + '</small></td>' +
             '<td>' + r.ack + '<br>' +
-                (r.fileurl !== '#' ? '<a href="' + r.fileurl + '" class="btn-xs btn-view" style="margin-top:3px;">Download</a>' : '<span style="color:#aaa;font-size:11px;">No file</span>') +
+                (r.fileurl && r.fileurl !== '#' ? '<a href="' + r.fileurl + '" class="btn-xs btn-view" style="margin-top:3px;" target="_blank">Download</a>' : '<span style="color:#aaa;font-size:11px;">Pending</span>') +
             '</td>' +
             '<td>' + r.remark + '</td>' +
-            '<td style="white-space:pre-line;">' + r.reqby + '\n' + r.reqon + '</td>' +
-            '<td>' + r.datefrom + ' ' + r.timefrom + '<br>To<br>' + r.dateto + ' ' + r.timeto + '</td>' +
-            '<td><span class="' + stClass + '">' + r.status + '</span></td>' +
-            '<td>' +
-                '<button class="btn-xs btn-reply" onclick="openReply(' + i + ')" style="margin-bottom:2px;">View Reply</button><br>' +
-                dlBtn +
-            '</td>' +
+            '<td style="white-space:pre-line;font-size:11px;">' + r.reqby + '\nDate\n' + r.reqon + '</td>' +
+            '<td style="font-size:11px;">' + r.datefrom + ' ' + r.timefrom + '<br>To<br>' + r.dateto + ' ' + r.timeto + '</td>' +
+            '<td>' + statusCell + '</td>' +
+            '<td>' + dlBtn + '</td>' +
         '</tr>';
     });
     tbody.innerHTML = html;
+}
+
+function openViewReply(idx) {
+    var r = currentData[idx];
+    document.getElementById('vrReqId').textContent    = r.id;
+    document.getElementById('vrBank').textContent     = r.bank;
+    document.getElementById('vrAtmId').textContent    = r.atmid;
+    document.getElementById('vrAck').textContent      = r.ack;
+    document.getElementById('vrStatus').textContent   = r.status;
+    document.getElementById('vrRemark').textContent   = r.remark;
+    document.getElementById('vrDownloadLink').href    = r.replyLink || '#';
+    document.getElementById('vrDownloadLink').textContent = r.replyLink || 'No link available';
+    logAct('[View Reply] Opened for ' + r.id + ' → ' + r.replyLink);
+    $('#modalViewReply').modal('show');
 }
 
 function openReply(idx) {
@@ -775,23 +844,6 @@ function submitReply() {
     }, 800);
 }
 
-function resetSearch() {
-    document.getElementById('txt_Requestid').value = '';
-    document.getElementById('txt_ack_fir_no').value = '';
-    document.getElementById('ContentPlaceHolder1_ddlbank').value = '';
-    document.getElementById('ContentPlaceHolder1_ddlaction').value = '';
-    document.getElementById('ContentPlaceHolder1_drpdist').value = '';
-    document.getElementById('ContentPlaceHolder1_drppolice').value = '';
-    $('.chzn-select').trigger('chosen:updated');
-    var today = new Date(), prior = new Date();
-    prior.setDate(prior.getDate() - 30);
-    document.getElementById('txtfldToDate').value   = today.toISOString().split('T')[0];
-    document.getElementById('txtfldFromDate').value = prior.toISOString().split('T')[0];
-    document.getElementById('resultsBody').innerHTML =
-        '<tr><td colspan="11" style="text-align:center;color:#888;padding:30px;">Use the search filters above and click <b>Search</b>.</td></tr>';
-    document.getElementById('shownCount').textContent = '0';
-    logAct('[Reset] Filters cleared');
-}
 </script>
 </body>
 </html>
