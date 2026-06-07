@@ -955,25 +955,6 @@ function openViewReply(idx) {
     $('#exampleModalCenter').modal('show');
 }
 
-function openReply(idx) {
-    var r = currentData[idx];
-    document.getElementById('modalReqId').textContent  = r.id;
-    document.getElementById('d_bank').textContent      = r.bank;
-    document.getElementById('d_atmid').textContent     = r.atmid;
-    document.getElementById('d_address').textContent   = r.address;
-    document.getElementById('d_datefrom').textContent  = r.datefrom;
-    document.getElementById('d_timefrom').textContent  = r.timefrom;
-    document.getElementById('d_dateto').textContent    = r.dateto;
-    document.getElementById('d_timeto').textContent    = r.timeto;
-    document.getElementById('d_ack').textContent       = r.ack;
-    document.getElementById('d_camera').textContent    = r.camera;
-    document.getElementById('d_status').textContent    = r.status;
-    document.getElementById('d_submitted').textContent = r.reqon;
-    document.getElementById('d_remark').textContent    = r.remark;
-    document.getElementById('d_filelink').href         = r.fileurl;
-    logAct('[View Reply] Opened for ' + r.id);
-    $('#modalReply').modal('show');
-}
 
 function openDownload(idx) {
     var r = currentData[idx];
@@ -1012,7 +993,7 @@ function submitReply() {
     simulatePostBack('ctl00$ContentPlaceHolder1$btnReply');
     logAct('[Reply] Submitted: ' + r);
     setTimeout(function() {
-        $('#modalReply').modal('hide');
+        $('#exampleModalCenter').modal('hide');
         document.getElementById('ContentPlaceHolder1_txtreplyremarks').value = '';
     }, 800);
 }
