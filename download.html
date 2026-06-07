@@ -828,19 +828,21 @@ function handleSearch() {
             if (dist   && r.state.toLowerCase().indexOf(dist.toLowerCase()) === -1) return false;
             // Police Station filter
             if (ps     && r.state.toLowerCase().indexOf(ps.toLowerCase())   === -1) return false;
-            // Date range filter — only apply if dates are provided
+            // Date range filter — parse reqon DD/MM/YYYY against input YYYY-MM-DD
             if (fromDate || toDate) {
-                // Parse reqon date (format: DD/MM/YYYY)
-                var reqonDate = r.reqon.split('\n')[0].trim(); // e.g. "02/05/2026"
-                var parts = reqonDate.split('/');
+                var reqonRaw = r.reqon.replace(/\\n/g, ' ').replace(/\n/g, ' ').split(' ')[0].trim();
+                var parts = reqonRaw.split('/');
                 if (parts.length === 3) {
-                    var recDate = new Date(parts[2], parts[1]-1, parts[0]); // YYYY, MM-1, DD
+                    // parts = [DD, MM, YYYY]
+                    var recDate = new Date(parseInt(parts[2]), parseInt(parts[1])-1, parseInt(parts[0]));
                     if (fromDate) {
-                        var from = new Date(fromDate);
+                        var fParts = fromDate.split('-');
+                        var from = new Date(parseInt(fParts[0]), parseInt(fParts[1])-1, parseInt(fParts[2]));
                         if (recDate < from) return false;
                     }
                     if (toDate) {
-                        var to = new Date(toDate);
+                        var tParts = toDate.split('-');
+                        var to = new Date(parseInt(tParts[0]), parseInt(tParts[1])-1, parseInt(tParts[2]));
                         if (recDate > to) return false;
                     }
                 }
