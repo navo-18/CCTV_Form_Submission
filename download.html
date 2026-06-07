@@ -26,7 +26,7 @@
             else cntfield.value = maxlimit - field.value.length;
         }
         function __doPostBack(t, a) { console.log("[ASP.NET] __doPostBack:", t); simulatePostBack(t); }
-        function WebForm_DoPostBackWithOptions(o) { handleSearch(); }
+        function WebForm_DoPostBackWithOptions(o) { handleSearch(); return false; }
         function WebForm_PostBackOptions(t,a,v,vg,au,tf,cs) { this.target=t; }
         var Sys = { WebForms: { PageRequestManager: {
             _initialize: function() { console.log("[ASP.NET] PageRequestManager init"); },
@@ -362,10 +362,10 @@
                         </div>
                     </div>
                     <div style="padding-bottom:12px;">
-                        <input type="submit"
+                        <input type="button"
                                name="ctl00$ContentPlaceHolder1$btnSearch"
                                id="ContentPlaceHolder1_btnSearch" value="Search"
-                               onclick="javascript:WebForm_DoPostBackWithOptions(new WebForm_PostBackOptions('ctl00$ContentPlaceHolder1$btnSearch','',true,'','',false,false))"
+                               onclick="handleSearch()"
                                class="btn-search" />
                     </div>
                 </div>
