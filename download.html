@@ -912,18 +912,19 @@ function openViewReply(idx) {
 
     // Uploaded Links table
     var lb = document.getElementById('uploadedLinksBody');
-    if (r.files && r.files.length > 0) {
-        var lh = '';
-        r.files.forEach(function(f, fi) {
-            var link = r.replyLink || f.url || '#';
-            lh += '<tr>';
-            lh += '<td style="text-align:center;">' + (fi+1) + '</td>';
-            lh += '<td><a href="' + link + '" target="_blank" style="color:#337ab7;text-decoration:underline;font-weight:bold;">View Link</a></td>';
-            lh += '<td>' + f.camera + '</td>';
-            lh += '<td>' + r.datefrom + ' ' + r.timefrom + ' To ' + r.dateto + ' ' + r.timeto + '</td>';
-            lh += '<td>' + f.uploaded + '</td>';
-            lh += '</tr>';
-        });
+    if (r.replyLink) {
+        // Single row — one link contains all camera footage (as in actual site)
+        var allCameras = r.files && r.files.length > 0
+            ? r.files.map(function(f) { return f.camera; }).join(', ')
+            : r.camera || '-';
+        var validUpto = r.files && r.files.length > 0 ? r.files[0].uploaded : '-';
+        var lh = '<tr>';
+        lh += '<td style="text-align:center;">1</td>';
+        lh += '<td><a href="' + r.replyLink + '" target="_blank" style="color:#337ab7;text-decoration:underline;font-weight:bold;">View Link</a></td>';
+        lh += '<td>' + allCameras + '</td>';
+        lh += '<td>' + r.datefrom + ' ' + r.timefrom + ' To ' + r.dateto + ' ' + r.timeto + '</td>';
+        lh += '<td>' + validUpto + '</td>';
+        lh += '</tr>';
         lb.innerHTML = lh;
     } else {
         lb.innerHTML = '<tr><td colspan="5" style="text-align:center;color:#888;padding:15px;">No links uploaded yet.</td></tr>';
