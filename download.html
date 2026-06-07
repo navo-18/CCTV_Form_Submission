@@ -910,19 +910,19 @@ function openViewReply(idx) {
     // Header
     document.getElementById('ContentPlaceHolder1_lblreqid').textContent = r.id;
 
-    // Uploaded Links table - one row per file
+    // Uploaded Links table
     var lb = document.getElementById('uploadedLinksBody');
     if (r.files && r.files.length > 0) {
         var lh = '';
         r.files.forEach(function(f, fi) {
-            lh += '<tr>' +
-                '<td style="text-align:center;">' + (fi+1) + '</td>' +
-                '<td><a href="' + (r.replyLink || f.url) + '" target="_blank" ' +
-                    'style="color:#337ab7; text-decoration:underline; font-weight:bold;">View Link</a></td>' +
-                '<td>' + f.camera + '</td>' +
-                '<td>' + r.datefrom + ' ' + r.timefrom + ' To ' + r.dateto + ' ' + r.timeto + '</td>' +
-                '<td>' + f.uploaded + '</td>' +
-            '</tr>';
+            var link = r.replyLink || f.url || '#';
+            lh += '<tr>';
+            lh += '<td style="text-align:center;">' + (fi+1) + '</td>';
+            lh += '<td><a href="' + link + '" target="_blank" style="color:#337ab7;text-decoration:underline;font-weight:bold;">View Link</a></td>';
+            lh += '<td>' + f.camera + '</td>';
+            lh += '<td>' + r.datefrom + ' ' + r.timefrom + ' To ' + r.dateto + ' ' + r.timeto + '</td>';
+            lh += '<td>' + f.uploaded + '</td>';
+            lh += '</tr>';
         });
         lb.innerHTML = lh;
     } else {
@@ -932,26 +932,12 @@ function openViewReply(idx) {
     // Certificate download link
     document.getElementById('ContentPlaceHolder1_lnkdownload').href = r.replyLink || '#';
 
-    // Remark
+    // Remark (readonly - shows bank reply)
     document.getElementById('ContentPlaceHolder1_txtreplyremarks').value = r.replyRemark || '';
 
     // Replied by / on
-    document.getElementById('popup_repliedby').textContent = r.repliedBy || '—';
-    document.getElementById('popup_repliedon').textContent = r.repliedOn || '—';
-
-    logAct('[View Reply] Opened: ' + r.id);
-    $('#exampleModalCenter').modal('show');
-}
-
-    // Certificate download link
-    document.getElementById('ContentPlaceHolder1_lnkdownload').href = r.certUrl || r.replyLink || '#';
-
-    // Remark (readonly - bank reply remark)
-    document.getElementById('ContentPlaceHolder1_txtreplyremarks').value = r.replyRemark || '';
-
-    // Replied by / Replied On
-    document.getElementById('popup_repliedby').textContent = r.repliedBy  || '';
-    document.getElementById('popup_repliedon').textContent = r.repliedOn  || '';
+    document.getElementById('popup_repliedby').textContent = r.repliedBy || '-';
+    document.getElementById('popup_repliedon').textContent = r.repliedOn || '-';
 
     logAct('[View Reply] Opened: ' + r.id);
     $('#exampleModalCenter').modal('show');
