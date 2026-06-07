@@ -421,15 +421,14 @@
 
 <!-- ═══════════════════════════════════════════════════════════════════════════
      MODAL 1: #exampleModalCenter — View Reply popup (triggered by btnpopup)
-     Matches actual site: shows bank reply with download link from bank
+     Matches actual site screenshot exactly
 ═══════════════════════════════════════════════════════════════════════════ -->
 <div class="modal fade" id="exampleModalCenter" role="dialog">
-    <div class="modal-dialog modal-dialog-centered" role="document" style="width:900px;">
+    <div class="modal-dialog modal-dialog-centered" role="document" style="width:850px;">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="exampleModalCenterTitle">
-                    <span>Request Id : </span>
-                    <b><span id="ContentPlaceHolder1_lblreqid"></span></b>
+                    Request Id : <b><span id="ContentPlaceHolder1_lblreqid"></span></b>
                 </h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
@@ -437,80 +436,60 @@
             </div>
             <div class="modal-body">
 
-                <!-- Request details table -->
-                <div class="table-responsive">
-                    <table class="table table-bordered" style="font-size:12px;">
-                        <tr>
-                            <th style="background:#f5f5f5; width:160px;">Bank Name</th>
-                            <td id="popup_bank"></td>
-                            <th style="background:#f5f5f5; width:160px;">ATM ID</th>
-                            <td id="popup_atmid"></td>
-                        </tr>
-                        <tr>
-                            <th style="background:#f5f5f5;">Address</th>
-                            <td colspan="3" id="popup_address"></td>
-                        </tr>
-                        <tr>
-                            <th style="background:#f5f5f5;">Date From</th>
-                            <td id="popup_datefrom"></td>
-                            <th style="background:#f5f5f5;">Time From</th>
-                            <td id="popup_timefrom"></td>
-                        </tr>
-                        <tr>
-                            <th style="background:#f5f5f5;">Date To</th>
-                            <td id="popup_dateto"></td>
-                            <th style="background:#f5f5f5;">Time To</th>
-                            <td id="popup_timeto"></td>
-                        </tr>
-                        <tr>
-                            <th style="background:#f5f5f5;">Ack No</th>
-                            <td id="popup_ack"></td>
-                            <th style="background:#f5f5f5;">Camera Footage</th>
-                            <td id="popup_camera"></td>
-                        </tr>
-                        <tr>
-                            <th style="background:#f5f5f5;">Current Status</th>
-                            <td id="popup_status"></td>
-                            <th style="background:#f5f5f5;">Requested On</th>
-                            <td id="popup_reqon"></td>
-                        </tr>
-                        <tr>
-                            <th style="background:#f5f5f5;">Remark</th>
-                            <td colspan="3" id="popup_remark"></td>
-                        </tr>
-                    </table>
-                </div>
-
-                <!-- Reply / Download link section -->
-                <div class="col-lg-12" style="margin-top:15px;">
-                    <label><b>Bank Reply / Download Link</b></label>
-                    <div style="background:#f0f7ff; border:1px solid #b8d4f0; border-radius:6px; padding:16px; margin-top:6px; text-align:center;">
-                        <div style="font-size:13px; color:#555; margin-bottom:12px;">
-                            The bank has uploaded the CCTV footage. Click the link below to download.
-                        </div>
-                        <a id="ContentPlaceHolder1_lnkdownload"
-                           href="#" target="_blank"
-                           style="display:inline-block; background:#5cb85c; color:#fff;
-                                  padding:10px 28px; border-radius:4px; font-size:14px;
-                                  font-weight:bold; text-decoration:none;">
-                            &#11015; Click Here to Download Footage
-                        </a>
-                        <div style="font-size:11px; color:#888; margin-top:10px;">
-                            You will be redirected to the bank's file sharing platform (WeTransfer / Google Drive etc.)
-                        </div>
+                <!-- Uploaded Links table -->
+                <div style="margin-bottom:16px;">
+                    <label style="font-weight:bold; font-size:13px;">Uploaded Links</label>
+                    <div class="table-responsive">
+                        <table class="table table-bordered" style="font-size:12px;" id="uploadedLinksTable">
+                            <thead>
+                                <tr style="background:#337ab7; color:#fff;">
+                                    <th style="width:50px;">S No.</th>
+                                    <th>Uploaded Link</th>
+                                    <th>Camera No</th>
+                                    <th>Date and Time of footage<br>(From- To)</th>
+                                    <th>Valid Upto Date Time</th>
+                                </tr>
+                            </thead>
+                            <tbody id="uploadedLinksBody">
+                                <tr>
+                                    <td colspan="5" style="text-align:center; color:#888; padding:15px;">
+                                        No links uploaded yet.
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
 
-                <!-- Reply remarks (readonly - matches actual site) -->
-                <div class="col-lg-12" style="margin-top:15px;">
-                    <label>Reply Remarks</label>
-                    <small style="color:#888;">(Only Alphanumeric , . - ():/  are allowed. Max 250 characters)</small>
+                <!-- Upload Certificate 55b(4) -->
+                <div style="margin-bottom:16px;">
+                    <label style="font-weight:bold; font-size:13px;">Upload Certificate 55b(4)</label><br>
+                    <span style="color:red; font-size:12px;">
+                        (Please sent the original / hard copy to the concerned investigation officer)
+                    </span><br>
+                    <a id="ContentPlaceHolder1_lnkdownload"
+                       href="#" target="_blank"
+                       style="color:#337ab7; font-size:13px; text-decoration:underline; font-weight:bold; display:inline-block; margin-top:6px;">
+                        Download
+                    </a>
+                </div>
+
+                <!-- Remark -->
+                <div style="margin-bottom:16px;">
+                    <label style="font-weight:bold; font-size:13px;">Remark</label>
+                    <small style="color:#555;">(Only Alphanumeric , . - () ! are allowed Max length should not be greater than 250 Characters)</small>
                     <textarea name="ctl00$ContentPlaceHolder1$txtreplyremarks"
                               id="ContentPlaceHolder1_txtreplyremarks"
-                              rows="2" cols="20" maxlength="250"
+                              rows="3" cols="20" maxlength="250"
                               class="form-control"
                               readonly="readonly"
-                              placeholder="Bank reply remarks will appear here..."></textarea>
+                              placeholder="(Only Alphanumeric , . - () ! are allowed. Max length should not be greater than 250)"></textarea>
+                </div>
+
+                <!-- Replied by / Replied On -->
+                <div style="font-size:12px; color:#333;">
+                    <div><b>Replied by :</b> <span id="popup_repliedby"></span></div>
+                    <div><b>Replied On :</b> <span id="popup_repliedon"></span></div>
                 </div>
 
             </div>
@@ -635,10 +614,10 @@ var sampleData = [
         action: '1',
         address: 'Main Market, Near Clock Tower, Ajmer, Rajasthan - 305001',
         fileurl: 'https://wetransfer.com/downloads/test-footage-001',
-        replyLink: 'https://we.tl/t-6jMOvG6wryi9m1Sv',
+        replyLink: 'https://wetransfer.com/downloads/test-footage-001',
         files: [
-            { name: 'Pinhole_SBI05234_01052026.mp4', camera: 'Pinhole Camera',   size: '245 MB', uploaded: '05/05/2026', url: 'https://we.tl/t-6jMOvG6wryi9m1Sv' },
-            { name: 'ATMRoom_SBI05234_01052026.mp4', camera: 'ATM Room Camera', size: '312 MB', uploaded: '05/05/2026', url: 'https://we.tl/t-6jMOvG6wryi9m1Sv' }
+            { name: 'Pinhole_SBI05234_01052026.mp4', camera: 'Pinhole Camera',   size: '245 MB', uploaded: '05/05/2026', url: 'https://wetransfer.com/downloads/test-footage-001' },
+            { name: 'ATMRoom_SBI05234_01052026.mp4', camera: 'ATM Room Camera', size: '312 MB', uploaded: '05/05/2026', url: 'https://wetransfer.com/downloads/test-footage-001' }
         ]
     },
     {
@@ -658,9 +637,12 @@ var sampleData = [
         action: '1',
         address: 'Station Road, Near Railway Station, Jaipur, Rajasthan - 302001',
         fileurl: 'https://drive.google.com/test-footage-002',
-        replyLink: 'https://drive.google.com/file/d/1dKXnsizvfJLTeFck7u4fXnxLoCnDs1VB/view?usp=sharing',
+        replyLink: 'https://drive.google.com/test-footage-002',
+        replyRemark: 'ATM room footage uploaded. Pinhole camera was not functional.',
+        repliedBy: 'Priya Verma (HDFC Bank)',
+        repliedOn: '08/05/2026 10:15:00',
         files: [
-            { name: 'ATMRoom_HDFC00912_05052026.mp4', camera: 'ATM Room Camera', size: '198 MB', uploaded: '08/05/2026', url: 'https://drive.google.com/file/d/1dKXnsizvfJLTeFck7u4fXnxLoCnDs1VB/view?usp=sharing' }
+            { name: 'ATMRoom_HDFC00912_05052026.mp4', camera: 'ATM Room Camera', size: '198 MB', uploaded: '08/05/2026', url: 'https://drive.google.com/test-footage-002' }
         ]
     },
     {
@@ -740,9 +722,12 @@ var sampleData = [
         action: '1',
         address: 'Station Road, Near Railway Station, Churu, Rajasthan - 331001',
         fileurl: 'https://wetransfer.com/downloads/test-footage-006',
-        replyLink: 'https://we.tl/t-6jMOvG6wryi9m1Sv',
+        replyLink: 'https://wetransfer.com/downloads/test-footage-006',
+        replyRemark: 'Footage uploaded via WeTransfer link.',
+        repliedBy: 'Amit Joshi (Canara Bank)',
+        repliedOn: '18/05/2026 09:45:00',
         files: [
-            { name: 'ATMRoom_CANARA00456_15052026.mp4', camera: 'ATM Room Camera', size: '275 MB', uploaded: '18/05/2026', url: 'https://we.tl/t-6jMOvG6wryi9m1Sv' }
+            { name: 'ATMRoom_CANARA00456_15052026.mp4', camera: 'ATM Room Camera', size: '275 MB', uploaded: '18/05/2026', url: 'https://wetransfer.com/downloads/test-footage-006' }
         ]
     },
     {
@@ -782,10 +767,13 @@ var sampleData = [
         action: '1',
         address: 'Subhash Nagar, Near Collectorate, Sikar, Rajasthan - 332001',
         fileurl: 'https://wetransfer.com/downloads/test-footage-008',
-        replyLink: 'https://we.tl/t-6jMOvG6wryi9m1Sv',
+        replyLink: 'https://wetransfer.com/downloads/test-footage-008',
+        replyRemark: 'Both camera footages uploaded successfully.',
+        repliedBy: 'Suresh Kumar (Union Bank of India)',
+        repliedOn: '25/05/2026 16:20:00',
         files: [
-            { name: 'Pinhole_UBI00321_22052026.mp4',  camera: 'Pinhole Camera',   size: '189 MB', uploaded: '25/05/2026', url: 'https://we.tl/t-6jMOvG6wryi9m1Sv' },
-            { name: 'ATMRoom_UBI00321_22052026.mp4',  camera: 'ATM Room Camera',  size: '220 MB', uploaded: '25/05/2026', url: 'https://we.tl/t-6jMOvG6wryi9m1Sv' }
+            { name: 'Pinhole_UBI00321_22052026.mp4',  camera: 'Pinhole Camera',   size: '189 MB', uploaded: '25/05/2026', url: 'https://wetransfer.com/downloads/test-footage-008' },
+            { name: 'ATMRoom_UBI00321_22052026.mp4',  camera: 'ATM Room Camera',  size: '220 MB', uploaded: '25/05/2026', url: 'https://wetransfer.com/downloads/test-footage-008' }
         ]
     }
 ];
@@ -916,22 +904,54 @@ function renderTable(data) {
 
 function openViewReply(idx) {
     var r = currentData[idx];
-    document.getElementById('ContentPlaceHolder1_lblreqid').textContent  = r.id;
-    document.getElementById('popup_bank').textContent      = r.bank;
-    document.getElementById('popup_atmid').textContent     = r.atmid;
-    document.getElementById('popup_address').textContent   = r.address;
-    document.getElementById('popup_datefrom').textContent  = r.datefrom;
-    document.getElementById('popup_timefrom').textContent  = r.timefrom;
-    document.getElementById('popup_dateto').textContent    = r.dateto;
-    document.getElementById('popup_timeto').textContent    = r.timeto;
-    document.getElementById('popup_ack').textContent       = r.ack;
-    document.getElementById('popup_camera').textContent    = r.camera;
-    document.getElementById('popup_status').textContent    = r.status;
-    document.getElementById('popup_reqon').textContent     = r.reqon.replace('\n', ' ');
-    document.getElementById('popup_remark').textContent    = r.remark;
-    document.getElementById('ContentPlaceHolder1_lnkdownload').href  = r.replyLink || '#';
+
+    // Header
+    document.getElementById('ContentPlaceHolder1_lblreqid').textContent = r.id;
+
+    // Uploaded Links table - one row per file
+    var lb = document.getElementById('uploadedLinksBody');
+    if (r.files && r.files.length > 0) {
+        var lh = '';
+        r.files.forEach(function(f, fi) {
+            lh += '<tr>' +
+                '<td style="text-align:center;">' + (fi+1) + '</td>' +
+                '<td><a href="' + (r.replyLink || f.url) + '" target="_blank" ' +
+                    'style="color:#337ab7; text-decoration:underline; font-weight:bold;">View Link</a></td>' +
+                '<td>' + f.camera + '</td>' +
+                '<td>' + r.datefrom + ' ' + r.timefrom + ' To ' + r.dateto + ' ' + r.timeto + '</td>' +
+                '<td>' + f.uploaded + '</td>' +
+            '</tr>';
+        });
+        lb.innerHTML = lh;
+    } else {
+        lb.innerHTML = '<tr><td colspan="5" style="text-align:center;color:#888;padding:15px;">No links uploaded yet.</td></tr>';
+    }
+
+    // Certificate download link
+    document.getElementById('ContentPlaceHolder1_lnkdownload').href = r.replyLink || '#';
+
+    // Remark
     document.getElementById('ContentPlaceHolder1_txtreplyremarks').value = r.replyRemark || '';
-    logAct('[View Reply] Opened: ' + r.id + ' link: ' + r.replyLink);
+
+    // Replied by / on
+    document.getElementById('popup_repliedby').textContent = r.repliedBy || '—';
+    document.getElementById('popup_repliedon').textContent = r.repliedOn || '—';
+
+    logAct('[View Reply] Opened: ' + r.id);
+    $('#exampleModalCenter').modal('show');
+}
+
+    // Certificate download link
+    document.getElementById('ContentPlaceHolder1_lnkdownload').href = r.certUrl || r.replyLink || '#';
+
+    // Remark (readonly - bank reply remark)
+    document.getElementById('ContentPlaceHolder1_txtreplyremarks').value = r.replyRemark || '';
+
+    // Replied by / Replied On
+    document.getElementById('popup_repliedby').textContent = r.repliedBy  || '';
+    document.getElementById('popup_repliedon').textContent = r.repliedOn  || '';
+
+    logAct('[View Reply] Opened: ' + r.id);
     $('#exampleModalCenter').modal('show');
 }
 
