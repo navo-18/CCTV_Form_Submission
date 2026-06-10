@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Log in</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            background: #c8d8e8;
+            background-image:
+                repeating-linear-gradient(
+                    45deg,
+                    rgba(255,255,255,0.03) 0px,
+                    rgba(255,255,255,0.03) 1px,
+                    transparent 1px,
+                    transparent 12px
+                );
+            font-family: Arial, sans-serif;
+            font-size: 13px;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Outer login box — matching MFT style */
+        .login-outer {
+            border: 1px solid #6ab0d4;
+            border-radius: 2px;
+            padding: 30px 36px 36px;
+            width: 340px;
+            background: rgba(240,246,252,0.85);
+            position: relative;
+        }
+
+        /* "Log in" legend label at top */
+        .legend {
+            position: absolute;
+            top: -10px;
+            left: 16px;
+            background: #c8d8e8;
+            padding: 0 6px;
+            font-size: 12px;
+            color: #444;
+            font-weight: normal;
+        }
+
+        /* Logo */
+        .logo-wrap {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+        .logo-wrap svg {
+            width: 72px;
+            height: 72px;
+        }
+
+        /* Form rows */
+        .form-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 14px;
+            position: relative;
+        }
+        .form-row label {
+            width: 80px;
+            text-align: right;
+            margin-right: 8px;
+            color: #333;
+            font-size: 13px;
+            white-space: nowrap;
+        }
+        .form-row input[type="text"],
+        .form-row input[type="password"] {
+            flex: 1;
+            border: 1px solid #aac4d8;
+            border-radius: 2px;
+            padding: 4px 6px;
+            font-size: 13px;
+            color: #222;
+            background: #fff;
+            outline: none;
+        }
+        .form-row input:focus {
+            border-color: #4a90c4;
+        }
+        .form-row input.error-field {
+            border-color: #cc0000;
+        }
+
+        /* Forgot links */
+        .forgot-link {
+            position: absolute;
+            right: 0;
+            bottom: -14px;
+            font-size: 10px;
+            color: #6ab0d4;
+            text-decoration: none;
+        }
+        .forgot-link:hover { text-decoration: underline; }
+
+        /* Error message */
+        .error-msg {
+            color: #cc0000;
+            font-size: 11px;
+            text-align: center;
+            margin: 4px 0 8px;
+            min-height: 16px;
+        }
+
+        /* Submit button */
+        .btn-wrap {
+            text-align: center;
+            margin-top: 22px;
+        }
+        .btn-login {
+            background: #e8e8e8;
+            border: 1px solid #aaa;
+            border-radius: 3px;
+            padding: 5px 28px;
+            font-size: 13px;
+            color: #333;
+            cursor: pointer;
+        }
+        .btn-login:hover { background: #d8d8d8; }
+        .btn-login:disabled { opacity: 0.6; cursor: not-allowed; }
+
+        /* Success */
+        .success-msg {
+            display: none;
+            text-align: center;
+            color: #2a7a2a;
+            font-size: 13px;
+            margin-top: 12px;
+            padding: 8px;
+            background: #eafaf1;
+            border: 1px solid #27ae60;
+            border-radius: 3px;
+        }
+
+        /* Back link */
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-top: 18px;
+            font-size: 11px;
+            color: #6ab0d4;
+            text-decoration: none;
+        }
+        .back-link:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+
+<div class="login-outer">
+    <span class="legend">Log in</span>
+
+    <!-- MFT-style logo (S-shaped like Bandhan MFT) -->
+    <div class="logo-wrap">
+        <svg viewBox="0 0 72 72" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="36" cy="36" r="34" fill="#1a2a4a"/>
+            <!-- S shape -->
+            <path d="M48 22 C48 22 44 18 36 18 C26 18 22 24 22 30 C22 36 28 39 36 42 C44 45 50 48 50 54 C50 60 46 54 36 54 C26 54 24 50 24 50"
+                  stroke="#4ab0e8" stroke-width="6" stroke-linecap="round" fill="none"/>
+        </svg>
+    </div>
+
+    <!-- Username -->
+    <div class="form-row" style="margin-bottom:22px;">
+        <label for="mft_username">Username:</label>
+        <input type="text" id="mft_username" autocomplete="off"
+               onkeydown="if(event.key==='Enter') doLogin()" />
+        <a href="#" class="forgot-link" onclick="return false;">Forgot Username</a>
+    </div>
+
+    <!-- Password -->
+    <div class="form-row" style="margin-bottom:22px;">
+        <label for="mft_password">Password:</label>
+        <input type="password" id="mft_password"
+               onkeydown="if(event.key==='Enter') doLogin()" />
+        <a href="#" class="forgot-link" onclick="return false;">Forgot Password</a>
+    </div>
+
+    <!-- Error -->
+    <div class="error-msg" id="errorMsg"></div>
+
+    <!-- Login button -->
+    <div class="btn-wrap">
+        <button class="btn-login" id="loginBtn" onclick="doLogin()">Log in</button>
+    </div>
+
+    <!-- Success -->
+    <div class="success-msg" id="successMsg">
+        ✓ Login successful! Redirecting to file download...
+    </div>
+
+    <a href="download.html" class="back-link">← Back to Portal</a>
+</div>
+
+<script>
+    // ── Read URL params ───────────────────────────────────────────────────────
+    const params      = new URLSearchParams(window.location.search);
+    const link        = params.get('link') || '#';
+    const encUser     = params.get('user') || '';
+    const encPw       = params.get('pw')   || '';
+
+    // Decode credentials
+    const correctUser = atob(encUser);
+    const correctPw   = atob(encPw);
+
+    // ── Login handler ─────────────────────────────────────────────────────────
+    function doLogin() {
+        const uEl    = document.getElementById('mft_username');
+        const pEl    = document.getElementById('mft_password');
+        const errEl  = document.getElementById('errorMsg');
+        const btn    = document.getElementById('loginBtn');
+        const succEl = document.getElementById('successMsg');
+
+        const user = uEl.value.trim();
+        const pw   = pEl.value.trim();
+
+        // Reset
+        uEl.classList.remove('error-field');
+        pEl.classList.remove('error-field');
+        errEl.textContent = '';
+
+        if (!user && !pw) {
+            uEl.classList.add('error-field');
+            pEl.classList.add('error-field');
+            errEl.textContent = 'Please enter your username and password.';
+            return;
+        }
+        if (!user) {
+            uEl.classList.add('error-field');
+            errEl.textContent = 'Please enter your username.';
+            uEl.focus();
+            return;
+        }
+        if (!pw) {
+            pEl.classList.add('error-field');
+            errEl.textContent = 'Please enter your password.';
+            pEl.focus();
+            return;
+        }
+
+        btn.disabled = true;
+        btn.textContent = 'Logging in...';
+
+        setTimeout(function() {
+            if (user === correctUser && pw === correctPw) {
+                // Success
+                succEl.style.display = 'block';
+                errEl.textContent = '';
+                setTimeout(function() {
+                    window.location.href = link;
+                }, 1200);
+            } else {
+                // Failure — mimic MFT error style
+                btn.disabled = false;
+                btn.textContent = 'Log in';
+                uEl.classList.add('error-field');
+                pEl.classList.add('error-field');
+                pEl.value = '';
+                errEl.textContent = 'Invalid username or password. Please try again.';
+                uEl.focus();
+            }
+        }, 700);
+    }
+
+    // Auto-focus username on load
+    window.onload = function() {
+        document.getElementById('mft_username').focus();
+    };
+</script>
+
+</body>
+</html>
